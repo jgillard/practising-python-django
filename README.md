@@ -15,3 +15,9 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+# Deployment
+
+Currently deployed on every push to master by Heroku.
+
+Site available here: https://django-categories.herokuapp.com/categories/
