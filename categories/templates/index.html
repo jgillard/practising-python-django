@@ -1,13 +1,7 @@
-{% if latest_category_list %}
-  <ul>
-    {% for category in latest_category_list %}
-    <li>
-      <a href="{% url 'category' category.id %}">
-        {{ category.name }}
-      <a>
-    </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>No categories found</p>
-{% endif %}
+<h1>Index</h1>
+
+{% include 'category_list.html' %}
+
+{% include 'question_list.html' %}
+
+{% include 'option_list.html' %}

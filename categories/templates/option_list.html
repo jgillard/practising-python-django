@@ -1,0 +1,10 @@
+<h2>Options</h2>
+<ul>
+  {% for option in option_list %}
+  <li>
+    <a href="{% url 'option' option.id %}">
+      {% include 'option.html' %}
+    <a>
+  </li>
+  {% endfor %}
+</ul>

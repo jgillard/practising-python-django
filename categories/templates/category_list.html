@@ -1,0 +1,10 @@
+<h2>Categories</h2>
+<ul>
+  {% for category in category_list %}
+  <li>
+    <a href="{% url 'category' category.id %}">
+      {% include 'category.html' %}
+    <a>
+  </li>
+  {% endfor %}
+</ul>
