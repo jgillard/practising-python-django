@@ -1,5 +1,5 @@
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 from .models import Category, Question, Option
 
@@ -19,10 +19,7 @@ def category_list(request):
 
 
 def category(request, category_id):
-    try:
-        context = {'category': Category.objects.get(id=category_id)}
-    except Category.DoesNotExist:
-        raise Http404("Category does not exist")
+    context = {'category': get_object_or_404(Category, id=category_id)}
     return render(request, 'category.html', context)
 
 
@@ -32,10 +29,7 @@ def question_list(request):
 
 
 def question(request, question_id):
-    try:
-        context = {'question': Question.objects.get(id=question_id)}
-    except Question.DoesNotExist:
-        raise Http404("Question does not exist")
+    context = {'question': get_object_or_404(Question, id=question_id)}
     return render(request, 'question.html', context)
 
 
@@ -45,8 +39,5 @@ def option_list(request):
 
 
 def option(request, option_id):
-    try:
-        context = {'option': Option.objects.get(id=option_id)}
-    except Option.DoesNotExist:
-        raise Http404("Option does not exist")
+    context = {'option': get_object_or_404(Option, id=option_id)}
     return render(request, 'option.html', context)
