@@ -1,10 +1,22 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
 <h2>Options</h2>
 <ul>
   {% for option in option_list %}
   <li>
     <a href="{% url 'option' option.id %}">
-      {% include 'option.html' %}
-    <a>
+      <p>
+        ID: {{ option.id }}<br>
+        Title: {{ option.title }}<br>
+        Question ID: {{ option.question.id }}<br>
+        Question Title: {{ option.question.title }}<br>
+      </p>
+    </a>
   </li>
   {% endfor %}
 </ul>
+
+{% endblock %}

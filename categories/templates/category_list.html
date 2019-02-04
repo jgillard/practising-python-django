@@ -1,10 +1,21 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
 <h2>Categories</h2>
 <ul>
   {% for category in category_list %}
   <li>
     <a href="{% url 'category' category.id %}">
-      {% include 'category.html' %}
-    <a>
+      <p>
+        ID: {{ category.id }}<br>
+        Name: {{ category.name }}<br>
+        Parent: {{ category.parent }}<br>
+      </p>
+    </a>
   </li>
   {% endfor %}
 </ul>
+
+{% endblock %}

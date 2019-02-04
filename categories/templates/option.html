@@ -1,6 +1,14 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h2>Option</h2>
 <p>
-    ID: {{ option.id }}<br>
-    Title: {{ option.title }}<br>
-    Question ID: {{ option.question.id }}<br>
-    Question Title: {{ option.question.title }}<br>
+  ID: {{ option.id }}<br>
+  Title: {{ option.title }}<br>
+  Question ID: {{ option.question.id }}<br>
+  Question Title: {{ option.question.title }}<br>
 </p>
+
+{% endblock %}
