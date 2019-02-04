@@ -5,12 +5,12 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
 
-    path('categories/', views.category_list, name='category_list'),
-    path('categories/<int:category_id>/', views.category, name='category'),
+    path('categories/', views.CategoryListView.as_view(), name='category_list'),
+    path('categories/<int:pk>/', views.CategoryView.as_view(), name='category_detail'),
 
-    path('questions/', views.question_list, name='question_list'),
-    path('questions/<int:question_id>/', views.question, name='question'),
+    path('questions/', views.QuestionListView.as_view(), name='question_list'),
+    path('questions/<int:pk>/', views.QuestionView.as_view(), name='question_detail'),
 
-    path('options/', views.option_list, name='option_list'),
-    path('options/<int:option_id>/', views.option, name='option'),
+    path('options/', views.OptionListView.as_view(), name='option_list'),
+    path('options/<int:pk>/', views.OptionView.as_view(), name='option_detail'),
 ]

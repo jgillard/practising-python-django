@@ -1,5 +1,5 @@
-from django.http import Http404
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
+from django.views import generic
 
 from .models import Category, Question, Option
 
@@ -12,32 +12,29 @@ def index(request):
     }
     return render(request, 'index.html', context)
 
+class CategoryListView(generic.ListView):
+    model = Category
+    template_name = 'category_list.html'
+    context_object_name = 'category_list'
 
-def category_list(request):
-    context = {'category_list': Category.objects.all()}
-    return render(request, 'category_list.html', context)
+class CategoryView(generic.DetailView):
+    model = Category
+    template_name = 'category_detail.html'
 
+class QuestionListView(generic.ListView):
+    model = Question
+    template_name = 'question_list.html'
+    context_object_name = 'question_list'
 
-def category(request, category_id):
-    context = {'category': get_object_or_404(Category, id=category_id)}
-    return render(request, 'category.html', context)
+class QuestionView(generic.DetailView):
+    model = Question
+    template_name = 'question_detail.html'
 
+class OptionListView(generic.ListView):
+    model = Option
+    template_name = 'option_list.html'
+    context_object_name = 'option_list'
 
-def question_list(request):
-    context = {'question_list': Question.objects.all()}
-    return render(request, 'question_list.html', context)
-
-
-def question(request, question_id):
-    context = {'question': get_object_or_404(Question, id=question_id)}
-    return render(request, 'question.html', context)
-
-
-def option_list(request):
-    context = {'option_list': Option.objects.all()}
-    return render(request, 'option_list.html', context)
-
-
-def option(request, option_id):
-    context = {'option': get_object_or_404(Option, id=option_id)}
-    return render(request, 'option.html', context)
+class OptionView(generic.DetailView):
+    model = Option
+    template_name = 'option_detail.html'

@@ -7,7 +7,7 @@
 <ul>
   {% for question in question_list %}
   <li>
-    <a href="{% url 'question' question.id %}">
+    <a href="{% url 'question_detail' question.id %}">
       <p>
         ID: {{ question.id }}<br>
         Title: {{ question.title }}<br>

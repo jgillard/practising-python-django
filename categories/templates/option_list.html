@@ -7,7 +7,7 @@
 <ul>
   {% for option in option_list %}
   <li>
-    <a href="{% url 'option' option.id %}">
+    <a href="{% url 'option_detail' option.id %}">
       <p>
         ID: {{ option.id }}<br>
         Title: {{ option.title }}<br>
