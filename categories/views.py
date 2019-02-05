@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
 
 from .models import Category, Question, Option
@@ -35,6 +35,19 @@ def category_new(request):
     else:
         form = CategoryForm()
         return render(request, 'category_new.html', {'form': form})
+
+
+def category_edit(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == "POST":
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            category = form.save()
+            category.save()
+            return redirect('category_detail', pk=category.pk)
+    else:
+        form = CategoryForm(instance=category)
+        return render(request, 'category_edit.html', {'form': form})
 
 
 class QuestionListView(generic.ListView):
