@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 
 from .models import Category, Question, Option
+from .forms import CategoryForm
 
 
 def index(request):
@@ -32,10 +33,9 @@ class CategoryCreateView(generic.edit.CreateView):
 
 
 class CategoryUpdateView(generic.edit.UpdateView):
-    # categories can become their own parent
     model = Category
+    form_class = CategoryForm
     template_name = 'category_edit.html'
-    fields = ('name', 'parent')
 
 
 class CategoryDeleteView(generic.edit.DeleteView):
