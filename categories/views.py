@@ -15,13 +15,15 @@ def index(request):
     return render(request, 'index.html', context)
 
 
+### Category Views ###
+
 class CategoryListView(generic.ListView):
     model = Category
     template_name = 'category_list.html'
     context_object_name = 'category_list'
 
 
-class CategoryView(generic.DetailView):
+class CategoryDetailView(generic.DetailView):
     model = Category
     template_name = 'category_detail.html'
 
@@ -45,6 +47,8 @@ class CategoryDeleteView(generic.edit.DeleteView):
     success_url = reverse_lazy('category_list')
 
 
+### Question Views ###
+
 class QuestionListView(generic.ListView):
     model = Question
     template_name = 'question_list.html'
@@ -55,6 +59,8 @@ class QuestionView(generic.DetailView):
     model = Question
     template_name = 'question_detail.html'
 
+
+### Option Views ###
 
 class OptionListView(generic.ListView):
     model = Option
