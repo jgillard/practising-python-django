@@ -5,14 +5,23 @@ from .models import Category, Question, Option
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'parent')
+    list_filter = ['parent']
+
+
+class OptionInline(admin.TabularInline):
+    model = Option
+    extra = 2
 
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'category', 'answer_type')
+    list_filter = ['category']
+    inlines = [OptionInline]
 
 
 class OptionAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'question')
+    list_filter = ['question']
 
 
 admin.site.register(Category, CategoryAdmin)
