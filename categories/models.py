@@ -26,6 +26,9 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return f'/categories/{self.pk}'
+
 
 class Question(models.Model):
     OPTION_TYPE_CHOICES = (

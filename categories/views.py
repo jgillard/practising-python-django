@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.views import generic
 
 from .models import Category, Question, Option
-from .forms import CategoryForm
 
 
 def index(request):
@@ -25,36 +25,24 @@ class CategoryView(generic.DetailView):
     template_name = 'category_detail.html'
 
 
-def category_new(request):
-    if request.method == "POST":
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            category = form.save()
-            category.save()
-            return redirect('category_detail', pk=category.pk)
-    else:
-        form = CategoryForm()
-        return render(request, 'category_new.html', {'form': form})
+class CategoryCreateView(generic.edit.CreateView):
+    model = Category
+    template_name = 'category_new.html'
+    fields = ('name', 'parent')
 
 
-def category_edit(request, pk):
-    category = get_object_or_404(Category, pk=pk)
-    if request.method == "POST":
-        form = CategoryForm(request.POST, instance=category)
-        if form.is_valid():
-            category = form.save()
-            category.save()
-            return redirect('category_detail', pk=category.pk)
-    else:
-        form = CategoryForm(instance=category)
-        return render(request, 'category_edit.html', {'form': form})
+class CategoryUpdateView(generic.edit.UpdateView):
+    # categories can become their own parent
+    model = Category
+    template_name = 'category_edit.html'
+    fields = ('name', 'parent')
 
 
-def category_delete(request, pk):
-    category = get_object_or_404(Category, pk=pk)
+class CategoryDeleteView(generic.edit.DeleteView):
     # this currently throws an exception if there are child objects
-    category.delete()
-    return redirect('category_list')
+    model = Category
+    template_name = 'category_delete.html'
+    success_url = reverse_lazy('category_list')
 
 
 class QuestionListView(generic.ListView):

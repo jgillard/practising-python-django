@@ -7,9 +7,9 @@ urlpatterns = [
 
     path('categories/', views.CategoryListView.as_view(), name='category_list'),
     path('categories/<int:pk>/', views.CategoryView.as_view(), name='category_detail'),
-    path('categories/new/', views.category_new, name='category_new'),
-    path('categories/<int:pk>/edit/', views.category_edit, name='category_edit'),
-    path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),
+    path('categories/new/', views.CategoryCreateView.as_view(), name='category_new'),
+    path('categories/<int:pk>/edit/', views.CategoryUpdateView.as_view(), name='category_edit'),
+    path('categories/<int:pk>/delete/', views.CategoryDeleteView.as_view(), name='category_delete'),
 
     path('questions/', views.QuestionListView.as_view(), name='question_list'),
     path('questions/<int:pk>/', views.QuestionView.as_view(), name='question_detail'),
