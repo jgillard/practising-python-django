@@ -50,6 +50,13 @@ def category_edit(request, pk):
         return render(request, 'category_edit.html', {'form': form})
 
 
+def category_delete(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    # this currently throws an exception if there are child objects
+    category.delete()
+    return redirect('category_list')
+
+
 class QuestionListView(generic.ListView):
     model = Question
     template_name = 'question_list.html'
