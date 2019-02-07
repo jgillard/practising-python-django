@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 
 from .models import Category, Question, Option
-from .forms import CategoryForm, QuestionForm
+from .forms import CategoryForm, QuestionForm, OptionForm
 
 
 def index(request):
@@ -73,6 +73,7 @@ class QuestionUpdateView(generic.edit.UpdateView):
 
 
 class QuestionDeleteView(generic.edit.DeleteView):
+    # this currently allows deletion of questions with referencing options
     model = Question
     form_class = QuestionForm
     template_name = 'question_delete.html'
@@ -90,3 +91,22 @@ class OptionListView(generic.ListView):
 class OptionDetailView(generic.DetailView):
     model = Option
     template_name = 'option_detail.html'
+
+
+class OptionCreateView(generic.edit.CreateView):
+    model = Option
+    template_name = 'option_new.html'
+    fields = ('title', 'question')
+
+
+class OptionUpdateView(generic.edit.UpdateView):
+    model = Option
+    form_class = OptionForm
+    template_name = 'option_edit.html'
+
+
+class OptionDeleteView(generic.edit.DeleteView):
+    model = Option
+    form_class = OptionForm
+    template_name = 'option_delete.html'
+    success_url = reverse_lazy('option_list')

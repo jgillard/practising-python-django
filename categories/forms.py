@@ -44,3 +44,9 @@ class QuestionForm(ModelForm):
                 raise ValidationError('Changing answer_type to number cannot occur if there are options referencing it')
 
         return cleaned_data
+
+
+class OptionForm(ModelForm):
+    class Meta:
+        model = Option
+        fields = ('title', 'question')

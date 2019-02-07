@@ -19,4 +19,7 @@ urlpatterns = [
 
     path('options/', views.OptionListView.as_view(), name='option_list'),
     path('options/<int:pk>/', views.OptionDetailView.as_view(), name='option_detail'),
+    path('options/new/', views.OptionCreateView.as_view(), name='option_new'),
+    path('options/<int:pk>/edit/', views.OptionUpdateView.as_view(), name='option_edit'),
+    path('options/<int:pk>/delete/', views.OptionDeleteView.as_view(), name='option_delete'),
 ]
