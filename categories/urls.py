@@ -12,8 +12,11 @@ urlpatterns = [
     path('categories/<int:pk>/delete/', views.CategoryDeleteView.as_view(), name='category_delete'),
 
     path('questions/', views.QuestionListView.as_view(), name='question_list'),
-    path('questions/<int:pk>/', views.QuestionView.as_view(), name='question_detail'),
+    path('questions/<int:pk>/', views.QuestionDetailView.as_view(), name='question_detail'),
+    path('questions/new/', views.QuestionCreateView.as_view(), name='question_new'),
+    path('questions/<int:pk>/edit/', views.QuestionUpdateView.as_view(), name='question_edit'),
+    path('questions/<int:pk>/delete/', views.QuestionDeleteView.as_view(), name='question_delete'),
 
     path('options/', views.OptionListView.as_view(), name='option_list'),
-    path('options/<int:pk>/', views.OptionView.as_view(), name='option_detail'),
+    path('options/<int:pk>/', views.OptionDetailView.as_view(), name='option_detail'),
 ]

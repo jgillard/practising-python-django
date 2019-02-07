@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 
 from .models import Category, Question, Option
-from .forms import CategoryForm
+from .forms import CategoryForm, QuestionForm
 
 
 def index(request):
@@ -55,9 +55,28 @@ class QuestionListView(generic.ListView):
     context_object_name = 'question_list'
 
 
-class QuestionView(generic.DetailView):
+class QuestionDetailView(generic.DetailView):
     model = Question
     template_name = 'question_detail.html'
+
+
+class QuestionCreateView(generic.edit.CreateView):
+    model = Question
+    template_name = 'question_new.html'
+    fields = ('title', 'category', 'answer_type')
+
+
+class QuestionUpdateView(generic.edit.UpdateView):
+    model = Question
+    form_class = QuestionForm
+    template_name = 'question_edit.html'
+
+
+class QuestionDeleteView(generic.edit.DeleteView):
+    model = Question
+    form_class = QuestionForm
+    template_name = 'question_delete.html'
+    success_url = reverse_lazy('question_list')
 
 
 ### Option Views ###
@@ -68,6 +87,6 @@ class OptionListView(generic.ListView):
     context_object_name = 'option_list'
 
 
-class OptionView(generic.DetailView):
+class OptionDetailView(generic.DetailView):
     model = Option
     template_name = 'option_detail.html'

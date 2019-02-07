@@ -56,6 +56,9 @@ class Question(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return f'/questions/{self.pk}'
+
 
 class Option(models.Model):
     title = models.CharField(
