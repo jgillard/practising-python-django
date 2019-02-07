@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h2>Delete Category</h2>
+<h2>Delete {{ class_name }}</h2>
 <form method="post">{% csrf_token %}
     <p>Are you sure you want to delete "{{ object }}"?</p>
     <input type="submit" value="Confirm">

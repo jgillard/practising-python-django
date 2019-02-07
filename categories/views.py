@@ -30,20 +30,23 @@ class CategoryDetailView(generic.DetailView):
 
 class CategoryCreateView(generic.edit.CreateView):
     model = Category
-    template_name = 'category_new.html'
+    template_name = 'generic_new.html'
+    extra_context = {'class_name': model.__name__}
     fields = ('name', 'parent')
 
 
 class CategoryUpdateView(generic.edit.UpdateView):
     model = Category
     form_class = CategoryForm
-    template_name = 'category_edit.html'
+    template_name = 'generic_edit.html'
+    extra_context = {'class_name': model.__name__}
 
 
 class CategoryDeleteView(generic.edit.DeleteView):
     # this currently throws an exception if there are child objects
     model = Category
-    template_name = 'category_delete.html'
+    template_name = 'generic_delete.html'
+    extra_context = {'class_name': model.__name__}
     success_url = reverse_lazy('category_list')
 
 
@@ -62,21 +65,24 @@ class QuestionDetailView(generic.DetailView):
 
 class QuestionCreateView(generic.edit.CreateView):
     model = Question
-    template_name = 'question_new.html'
+    template_name = 'generic_new.html'
+    extra_context = {'class_name': model.__name__}
     fields = ('title', 'category', 'answer_type')
 
 
 class QuestionUpdateView(generic.edit.UpdateView):
     model = Question
     form_class = QuestionForm
-    template_name = 'question_edit.html'
+    template_name = 'generic_edit.html'
+    extra_context = {'class_name': model.__name__}
 
 
 class QuestionDeleteView(generic.edit.DeleteView):
     # this currently allows deletion of questions with referencing options
     model = Question
     form_class = QuestionForm
-    template_name = 'question_delete.html'
+    template_name = 'generic_delete.html'
+    extra_context = {'class_name': model.__name__}
     success_url = reverse_lazy('question_list')
 
 
@@ -95,18 +101,21 @@ class OptionDetailView(generic.DetailView):
 
 class OptionCreateView(generic.edit.CreateView):
     model = Option
-    template_name = 'option_new.html'
+    template_name = 'generic_new.html'
+    extra_context = {'class_name': model.__name__}
     fields = ('title', 'question')
 
 
 class OptionUpdateView(generic.edit.UpdateView):
     model = Option
     form_class = OptionForm
-    template_name = 'option_edit.html'
+    template_name = 'generic_edit.html'
+    extra_context = {'class_name': model.__name__}
 
 
 class OptionDeleteView(generic.edit.DeleteView):
     model = Option
     form_class = OptionForm
-    template_name = 'option_delete.html'
+    template_name = 'generic_delete.html'
+    extra_context = {'class_name': model.__name__}
     success_url = reverse_lazy('option_list')
