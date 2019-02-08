@@ -44,7 +44,7 @@ Get transaction time: {{ reqs2secs|floatformat:3 }}s<br>
     <br>
     Possible Questions:<br>
     <ul>
-    {% for q in questions %}
+    {% for q in qs %}
         <li>{{ q.title }} : {{ q.answer_type }}</li>
     {% endfor %}
     </ul>

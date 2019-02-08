@@ -1,8 +1,10 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import generic
 
+from datetime import datetime, timedelta
 import requests
 import time
 
@@ -189,3 +191,39 @@ class TxidDeleteView(generic.edit.DeleteView):
         qas.delete()
         return super().delete(request, *args, **kwargs)
 
+
+@login_required(login_url='/admin/')
+def latest_monzo_transaction(request):
+    one_week_ago = datetime.utcnow() - timedelta(days=7)
+    since = one_week_ago.isoformat(timespec='seconds') + 'Z'
+
+    # Get the latest transactions (in the last 7 days)
+    transactions_endpoint = 'https://api.monzo.com/transactions'
+    params = {'account_id': settings.MONZO_ACCOUNT_ID, 'since': since}
+    headers = {'Authorization': 'Bearer ' + settings.MONZO_BEARER}
+
+    t0 = time.time()
+    r = requests.get(transactions_endpoint, params=params, headers=headers)
+    req_1_secs = time.time() - t0
+
+    data = r.json()
+    spending = [t for t in data['transactions'] if t['include_in_spending']]
+    latest_txid = spending[-1]['id']
+
+    # Get the latest expenditure with full merchant data
+    params['expand[]'] = 'merchant'
+
+    t0 = time.time()
+    r = requests.get(f'{transactions_endpoint}/{latest_txid}', params=params, headers=headers)
+    req_2_secs = time.time() - t0
+
+    data = r.json()
+    latest = data['transaction']
+
+    td = TransactionData.objects.get(pk=latest_txid)
+    questions = Question.objects.filter(category=td.category)
+    qas = QuestionAnswer.objects.filter(txid=latest_txid)
+
+    context = {'data': latest, 'reqs1secs': req_1_secs, 'reqs2secs': req_2_secs,
+               'td': td, 'qs': questions, 'qas': qas}
+    return render(request, 'latest_transaction.html', context)
