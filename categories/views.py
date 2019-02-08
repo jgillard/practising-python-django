@@ -220,10 +220,12 @@ def latest_monzo_transaction(request):
     data = r.json()
     latest = data['transaction']
 
-    td = TransactionData.objects.get(pk=latest_txid)
-    questions = Question.objects.filter(category=td.category)
-    qas = QuestionAnswer.objects.filter(txid=latest_txid)
+    context = {'data': latest, 'reqs1secs': req_1_secs, 'reqs2secs': req_2_secs}
+    try:
+        context['td'] = TransactionData.objects.get(pk=latest_txid)
+        context['qs'] = Question.objects.filter(category=context['td'].category)
+        context['qas'] = QuestionAnswer.objects.filter(txid=latest_txid)
+    except TransactionData.DoesNotExist:
+        pass
 
-    context = {'data': latest, 'reqs1secs': req_1_secs, 'reqs2secs': req_2_secs,
-               'td': td, 'qs': questions, 'qas': qas}
     return render(request, 'latest_transaction.html', context)
