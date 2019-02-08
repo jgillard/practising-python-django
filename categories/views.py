@@ -140,3 +140,52 @@ class TxidDetailView(generic.DetailView):
         context['qs'] = Question.objects.filter(category=td.category)
         context['qas'] = QuestionAnswer.objects.filter(txid=td)
         return context
+
+
+def new_txid(request, txid=None):
+    # instructions for adding a formset: https://stackoverflow.com/a/28059352
+    # requires for additional/configurable number of QAs
+
+    if request.method == 'POST':
+        form_td = TransactionDataForm(request.POST)
+        form_qa = QuestionAnswerForm(request.POST)
+        if all([form_td.is_valid(), form_qa.is_valid()]):
+            td = form_td.save()
+            if form_qa.cleaned_data:
+                qa = form_qa.save(commit=False)
+                qa.txid = td
+                qa.save()
+            return redirect('txid_detail', txid=td.txid)
+    else:
+        prefill_data = {'txid': txid}
+        form_td = TransactionDataForm(initial=prefill_data)
+        form_qa = QuestionAnswerForm(initial=prefill_data)
+
+    context = {'form_td': form_td, 'form_qa': form_qa}
+    return render(request, 'txid_new.html', context=context)
+
+
+class TxidDeleteView(generic.edit.DeleteView):
+    model = TransactionData
+    template_name = 'generic_delete.html'
+    extra_context = {'class_name': 'txid', 'footer': 'foobles'}
+    pk_url_kwarg = 'txid'
+    success_url = reverse_lazy('txid_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # add debug data for deletions
+        td = repr(context['object'])
+        qas = list(QuestionAnswer.objects.filter(txid__exact=context['object']))
+        context['footer'] = f'''In addition to the TransactionData: {td},
+            the following QuestionAnswer objects will be first be deleted {qas}'''
+
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        # delete the dependant QAs first
+        qas = QuestionAnswer.objects.filter(txid__exact=kwargs['txid'])
+        qas.delete()
+        return super().delete(request, *args, **kwargs)
+

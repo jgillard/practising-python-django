@@ -25,5 +25,8 @@ urlpatterns = [
 
     path('lt/', views.latest_monzo_transaction, name='latest_transaction'),
     path('txid/', views.TxidListView.as_view(), name='txid_list'),
+    path('txid/new/', views.new_txid, name='txid_new'),
     path('txid/<str:txid>/', views.TxidDetailView.as_view(), name='txid_detail'),
+    path('txid/new/<str:txid>', views.new_txid, name='txid_new'),
+    path('txid/<str:txid>/delete/', views.TxidDeleteView.as_view(), name='txid_delete'),
 ]

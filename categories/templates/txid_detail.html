@@ -8,11 +8,11 @@
   <tbody>
     <tr>
       <th scope="row">TXID</th>
-      <td>{{ td.txid }}</td>
+      <td>{{ object.txid }}</td>
     </tr>
     <tr>
       <th scope="row">Assigned Category</th>
-      <td>{{ td.category }}</td>
+      <td>{{ object.category }}</td>
     </tr>
     {% for q in qs %}
     <tr>
@@ -34,6 +34,6 @@
   </tbody>
 </table>
 
-<a class="btn btn-danger" href="{% url 'txid_delete' td.txid %}">Delete TXID</a>
+<a class="btn btn-danger" href="{% url 'txid_delete' object.txid %}">Delete TXID</a>
 
 {% endblock %}
