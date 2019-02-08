@@ -1,9 +1,13 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import generic
 
-from .models import Category, Question, Option
-from .forms import CategoryForm, QuestionForm, OptionForm
+import requests
+import time
+
+from .forms import CategoryForm, QuestionForm, OptionForm, TransactionDataForm, QuestionAnswerForm
+from .models import Category, Question, Option, TransactionData, QuestionAnswer
 
 
 def index(request):
@@ -116,3 +120,23 @@ class OptionDeleteView(generic.edit.DeleteView):
     template_name = 'generic_delete.html'
     extra_context = {'class_name': model.__name__}
     success_url = reverse_lazy('option_list')
+
+
+### Transaction Views ###
+
+class TxidListView(generic.ListView):
+    model = TransactionData
+    template_name = 'txid_list.html'
+
+
+class TxidDetailView(generic.DetailView):
+    model = TransactionData
+    template_name = 'txid_detail.html'
+    pk_url_kwarg = 'txid'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        td = context['object']
+        context['qs'] = Question.objects.filter(category=td.category)
+        context['qas'] = QuestionAnswer.objects.filter(txid=td)
+        return context

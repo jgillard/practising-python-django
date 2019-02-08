@@ -3,7 +3,7 @@ import logging
 from django.forms import ModelForm
 from django.core.exceptions import ValidationError
 
-from .models import Category, Question, Option
+from .models import Category, Question, Option, TransactionData, QuestionAnswer
 
 logger = logging.getLogger(__name__)
 
@@ -50,3 +50,15 @@ class OptionForm(ModelForm):
     class Meta:
         model = Option
         fields = ('title', 'question')
+
+
+class TransactionDataForm(ModelForm):
+    class Meta:
+        model = TransactionData
+        fields = ('txid', 'category')
+
+
+class QuestionAnswerForm(ModelForm):
+    class Meta:
+        model = QuestionAnswer
+        fields = ('question', 'option_answer', 'number_answer')

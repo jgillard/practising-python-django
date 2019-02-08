@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h2>Stored TXIDs</h2>
+<ul>
+  {% for txid in object_list %}
+  <li>
+    <a href="{% url 'txid_detail' txid.txid %}">
+      <p>
+        ID: {{ txid.txid }}<br>
+        Name: {{ txid.category }}<br>
+      </p>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+
+<a class="btn btn-dark" href="{% url 'txid_new' %}">New TXID</a>
+
+{% endblock %}

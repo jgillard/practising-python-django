@@ -22,4 +22,8 @@ urlpatterns = [
     path('options/new/', views.OptionCreateView.as_view(), name='option_new'),
     path('options/<int:pk>/edit/', views.OptionUpdateView.as_view(), name='option_edit'),
     path('options/<int:pk>/delete/', views.OptionDeleteView.as_view(), name='option_delete'),
+
+    path('lt/', views.latest_monzo_transaction, name='latest_transaction'),
+    path('txid/', views.TxidListView.as_view(), name='txid_list'),
+    path('txid/<str:txid>/', views.TxidDetailView.as_view(), name='txid_detail'),
 ]

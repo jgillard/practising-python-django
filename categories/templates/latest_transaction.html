@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% load mathfilters %}
+
+
+{% block content %}
+
+<h1>Latest Transaction</h1>
+<h4>Metadata</h4>
+<p>
+List transactions time: {{ reqs1secs|floatformat:3 }}s<br>
+Get transaction time: {{ reqs2secs|floatformat:3 }}s<br>
+<br>
+<h3>Top-level Data</h3>
+    ID: {{ data.id }}<br>
+    Created: {{ data.created }}<br>
+    Description: {{ data.description }}<br>
+    Amount: {{ data.amount }}<br>
+    Currency: {{ data.currency }}<br>
+    Category: {{ data.category }}<br>
+    is_load: {{ data.is_load }}<br>
+    Local Amount: {{ data.local_amount }}<br>
+    Local Currency: {{ data.local_currency }}<br>
+<br>
+<h3>Merchant Data</h3>
+    Merchant ID: {{ data.merchant.id }}<br>
+    Merchant Name: {{ data.merchant.name }}<br>
+    Merchant Logo URL: {{ data.merchant.logo }}<br>
+    Merchant Emoji: {{ data.merchant.emoji }}<br>
+    Merchant Category: {{ data.merchant.category }}<br>
+    Merchant Address: {{ data.merchant.address.formatted }}<br>
+<br>
+<h3>Derived Data</h3>
+<strong>
+    Cost: {{ data.amount|abs|div:100 }} {{ data.currency }}<br>
+    Local Cost: {{ data.local_amount|abs|div:100 }} {{ data.local_currency }}<br>
+    <img src="{{ data.merchant.logo }}" width="30%">
+</strong>
+<br><br><br>
+<h3>Persisted Data</h3>
+<strong>
+    TXID: {{ td.txid }}<br>
+    Assigned Category: {{ td.category }}<br>
+    <br>
+    Possible Questions:<br>
+    <ul>
+    {% for q in questions %}
+        <li>{{ q.title }} : {{ q.answer_type }}</li>
+    {% endfor %}
+    </ul>
+    QuestionAnswers:<br>
+    <ul>
+    {% for qa in qas %}
+        <li>
+        <p>option answer: {{ qa.option_answer }}<br>
+        number answer: {{ qa.number_answer }}</p>
+        </li>
+    {% endfor %}
+    </ul>
+</strong>
+<br><br><br>
+<a class="btn btn-dark" href="{% url 'txid_new' data.id %}">Create TXID</a>
+<br><br><br>
+<h3>Original JSON</h3>
+{{ data|pprint }}<br>
+</p>
+
+{% endblock %}

@@ -80,3 +80,57 @@ class Option(models.Model):
 
     def get_absolute_url(self):
         return f'/options/{self.pk}'
+
+
+class TransactionData(models.Model):
+    txid = models.CharField(
+        primary_key=True,
+        max_length=30,
+    )
+
+    category = models.ForeignKey(
+        'Category',
+
+        # prevent deletion of Category if it has TransactionData
+        on_delete=models.PROTECT,
+    )
+
+    class Meta:
+        verbose_name_plural = 'TransactionData'
+
+    def __str__(self):
+        return self.txid
+
+
+class QuestionAnswer(models.Model):
+    txid = models.ForeignKey(
+        'TransactionData',
+
+        # prevent deletion of TransactionData if it has QuestionAnswer
+        on_delete=models.PROTECT,
+    )
+
+    question = models.ForeignKey(
+        'Question',
+
+        # prevent deletion of Question if it has QuestionAnswer
+        on_delete=models.PROTECT,
+    )
+
+    option_answer = models.ForeignKey(
+        'Option',
+
+        # prevent deletion of Option if it has QuestionAnswer
+        on_delete=models.PROTECT,
+
+        null=True,
+        blank=True,
+    )
+
+    number_answer = models.IntegerField(
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name_plural = 'QuestionAnswers'
