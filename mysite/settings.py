@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
+from configparser import RawConfigParser
+from django.core.exceptions import ImproperlyConfigured
 import os
 import django_heroku
 
@@ -129,3 +131,15 @@ STATIC_URL = '/static/'
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
+
+# Additional env vars
+config = RawConfigParser()
+config.read(BASE_DIR + '/mysite/settings_dev.ini')
+MONZO_ACCOUNT_ID = config.get('monzo', 'account_id') \
+    if config.has_option('monzo', 'account_id') \
+    else os.environ['MONZO_ACCOUNT_ID']
+MONZO_BEARER = config.get('monzo', 'bearer') \
+    if config.has_option('monzo', 'bearer') \
+    else os.environ.get('MONZO_BEARER')
+if not MONZO_ACCOUNT_ID or not MONZO_BEARER:
+    raise ImproperlyConfigured('a required setting variable is missing, check settings.py')
