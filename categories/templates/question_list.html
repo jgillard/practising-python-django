@@ -5,7 +5,7 @@
 
 <h2>Questions</h2>
 <ul>
-  {% for question in question_list %}
+  {% for question in object_list %}
   <li>
     <a href="{% url 'question_detail' question.id %}">
       <p>

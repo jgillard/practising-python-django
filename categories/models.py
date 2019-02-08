@@ -10,7 +10,7 @@ class Category(models.Model):
     parent = models.ForeignKey(
         'self',
 
-        # prevent deletion of referenced upper-level categories
+        # prevent cascading Category deletions
         on_delete=models.PROTECT,
 
         # for top-level categories, allow null for the db
@@ -44,7 +44,7 @@ class Question(models.Model):
     category = models.ForeignKey(
         'Category',
 
-        # prevent deletion of referenced categories
+        # prevent deletion of Category if it has Questions
         on_delete=models.PROTECT
     )
 
@@ -68,7 +68,7 @@ class Option(models.Model):
     question = models.ForeignKey(
         'Question',
 
-        # deleting a question causes its options to be deleted
+        # deleting a Question causes its Options to be deleted
         on_delete=models.CASCADE,
 
         # only allow options for string questions

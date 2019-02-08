@@ -20,7 +20,6 @@ def index(request):
 class CategoryListView(generic.ListView):
     model = Category
     template_name = 'category_list.html'
-    context_object_name = 'category_list'
 
 
 class CategoryDetailView(generic.DetailView):
@@ -55,7 +54,6 @@ class CategoryDeleteView(generic.edit.DeleteView):
 class QuestionListView(generic.ListView):
     model = Question
     template_name = 'question_list.html'
-    context_object_name = 'question_list'
 
 
 class QuestionDetailView(generic.DetailView):
@@ -91,7 +89,6 @@ class QuestionDeleteView(generic.edit.DeleteView):
 class OptionListView(generic.ListView):
     model = Option
     template_name = 'option_list.html'
-    context_object_name = 'option_list'
 
 
 class OptionDetailView(generic.DetailView):
