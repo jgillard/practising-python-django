@@ -172,20 +172,6 @@ def new_txid(request, txid=None):
     return render(request, 'txid_new.html', context=context)
 
 
-def load_questions_for_category(request):
-    category_id = request.GET.get('category')
-    questions = Question.objects.filter(category=category_id)
-    return render(request, 'dropdowns/question_dropdown_list.html', {'questions': questions})
-
-
-def load_options_for_question(request):
-    question_id = request.GET.get('question')
-    options = Option.objects.filter(question=question_id)
-    if len(options) == 0:
-        return HttpResponse()
-    return render(request, 'dropdowns/option_dropdown_list.html', {'options': options})
-
-
 class TxidDeleteView(generic.edit.DeleteView):
     model = TransactionData
     template_name = 'generic_delete.html'
@@ -210,6 +196,8 @@ class TxidDeleteView(generic.edit.DeleteView):
         qas.delete()
         return super().delete(request, *args, **kwargs)
 
+
+### Monzo API Views ###
 
 @login_required(login_url='/admin/')
 def latest_monzo_transaction(request):
@@ -262,3 +250,19 @@ def week_list_view(request):
 
     context = {'object_list': spending, 'reqs1secs': req_1_secs}
     return render(request, 'week.html', context)
+
+
+### AJAX Views ###
+
+def load_questions_for_category(request):
+    category_id = request.GET.get('category')
+    questions = Question.objects.filter(category=category_id)
+    return render(request, 'dropdowns/question_dropdown_list.html', {'questions': questions})
+
+
+def load_options_for_question(request):
+    question_id = request.GET.get('question')
+    options = Option.objects.filter(question=question_id)
+    if len(options) == 0:
+        return HttpResponse()
+    return render(request, 'dropdowns/option_dropdown_list.html', {'options': options})
