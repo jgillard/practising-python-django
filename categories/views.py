@@ -35,9 +35,14 @@ class CategoryDetailView(generic.DetailView):
 
 class CategoryCreateView(generic.edit.CreateView):
     model = Category
+    form_class = CategoryForm
     template_name = 'generic_new.html'
     extra_context = {'class_name': model.__name__}
-    fields = ('name', 'parent')
+
+    def post(self, request, *args, **kwargs):
+        if 'save-and-add-another' in request.POST:
+            self.success_url = reverse_lazy('category_new')
+        return super().post(self, request, *args, **kwargs)
 
 
 class CategoryUpdateView(generic.edit.UpdateView):
@@ -69,9 +74,9 @@ class QuestionDetailView(generic.DetailView):
 
 class QuestionCreateView(generic.edit.CreateView):
     model = Question
+    form_class = QuestionForm
     template_name = 'generic_new.html'
     extra_context = {'class_name': model.__name__}
-    fields = ('title', 'category', 'answer_type')
 
 
 class QuestionUpdateView(generic.edit.UpdateView):
@@ -104,9 +109,9 @@ class OptionDetailView(generic.DetailView):
 
 class OptionCreateView(generic.edit.CreateView):
     model = Option
+    form_class = OptionForm
     template_name = 'generic_new.html'
     extra_context = {'class_name': model.__name__}
-    fields = ('title', 'question')
 
 
 class OptionUpdateView(generic.edit.UpdateView):

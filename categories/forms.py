@@ -13,6 +13,10 @@ class CategoryForm(forms.ModelForm):
         model = Category
         fields = ('name', 'parent')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['parent'].label_from_instance = lambda obj: obj.get_hierarchical_name()
+
     def clean(self):
         cleaned_data = super().clean()
 
@@ -28,6 +32,10 @@ class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
         fields = ('title', 'category', 'answer_type')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['category'].label_from_instance = lambda obj: obj.get_hierarchical_name()
 
     def clean(self):
         logger.error('in clean')
@@ -50,6 +58,10 @@ class OptionForm(forms.ModelForm):
     class Meta:
         model = Option
         fields = ('title', 'question')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['question'].label_from_instance = lambda obj: obj.get_hierarchical_name()
 
 
 class TransactionDataForm(forms.ModelForm):

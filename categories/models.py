@@ -29,6 +29,12 @@ class Category(models.Model):
     def get_absolute_url(self):
         return f'/categories/{self.pk}'
 
+    def get_hierarchical_name(self):
+        if not self.parent:
+            return self.name
+        else:
+            return f'{self.parent.name} -> {self.name}'
+
 
 class Question(models.Model):
     OPTION_TYPE_CHOICES = (
@@ -58,6 +64,9 @@ class Question(models.Model):
 
     def get_absolute_url(self):
         return f'/questions/{self.pk}'
+
+    def get_hierarchical_name(self):
+        return f'{self.category.name} -> {self.title}'
 
 
 class Option(models.Model):
