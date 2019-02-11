@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import generic
@@ -160,10 +161,24 @@ def new_txid(request, txid=None):
     else:
         prefill_data = {'txid': txid}
         form_td = TransactionDataForm(initial=prefill_data)
-        form_qa = QuestionAnswerForm(initial=prefill_data)
+        form_qa = QuestionAnswerForm()
 
     context = {'form_td': form_td, 'form_qa': form_qa}
     return render(request, 'txid_new.html', context=context)
+
+
+def load_questions_for_category(request):
+    category_id = request.GET.get('category')
+    questions = Question.objects.filter(category=category_id)
+    return render(request, 'dropdowns/question_dropdown_list.html', {'questions': questions})
+
+
+def load_options_for_question(request):
+    question_id = request.GET.get('question')
+    options = Option.objects.filter(question=question_id)
+    if len(options) == 0:
+        return HttpResponse()
+    return render(request, 'dropdowns/option_dropdown_list.html', {'options': options})
 
 
 class TxidDeleteView(generic.edit.DeleteView):

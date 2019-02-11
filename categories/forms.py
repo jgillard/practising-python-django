@@ -1,6 +1,6 @@
 import logging
 
-from django.forms import ModelForm
+from django import forms
 from django.core.exceptions import ValidationError
 
 from .models import Category, Question, Option, TransactionData, QuestionAnswer
@@ -8,7 +8,7 @@ from .models import Category, Question, Option, TransactionData, QuestionAnswer
 logger = logging.getLogger(__name__)
 
 
-class CategoryForm(ModelForm):
+class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = ('name', 'parent')
@@ -24,7 +24,7 @@ class CategoryForm(ModelForm):
         return cleaned_data
 
 
-class QuestionForm(ModelForm):
+class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
         fields = ('title', 'category', 'answer_type')
@@ -46,19 +46,24 @@ class QuestionForm(ModelForm):
         return cleaned_data
 
 
-class OptionForm(ModelForm):
+class OptionForm(forms.ModelForm):
     class Meta:
         model = Option
         fields = ('title', 'question')
 
 
-class TransactionDataForm(ModelForm):
+class TransactionDataForm(forms.ModelForm):
     class Meta:
         model = TransactionData
         fields = ('txid', 'category')
 
 
-class QuestionAnswerForm(ModelForm):
+class QuestionAnswerForm(forms.ModelForm):
     class Meta:
         model = QuestionAnswer
         fields = ('question', 'option_answer', 'number_answer')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['question'].queryset = Question.objects.all()
+        self.fields['option_answer'].queryset = Option.objects.all()
