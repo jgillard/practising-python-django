@@ -29,4 +29,5 @@ urlpatterns = [
     path('txid/<str:txid>/', views.TxidDetailView.as_view(), name='txid_detail'),
     path('txid/new/<str:txid>', views.new_txid, name='txid_new'),
     path('txid/<str:txid>/delete/', views.TxidDeleteView.as_view(), name='txid_delete'),
+    path('week/', views.week_list_view, name='week'),
 ]

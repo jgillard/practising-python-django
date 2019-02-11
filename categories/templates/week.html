@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% load mathfilters %}
+
+
+{% block content %}
+
+<h2>Week of Monzo Transactions</h2>
+
+<h4>Metadata</h4>
+<p>List transactions time: {{ reqs1secs|floatformat:3 }}s</p>
+
+<table class="table">
+ <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Created</th>
+      <th scope="col">Desc</th>
+      <th scope="col">Cost</th>
+      <th scope="col">Local Cost</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in object_list %}
+      <tr {% if obj.td_obj %}class="table-success"{% endif %}>
+        <td>
+          {% if obj.td_obj %}
+            <a href="{% url 'txid_detail' obj.id %}">{{ obj.id }}</a>
+          {% else %}
+            {{ obj.id }}
+          {% endif %}
+        </td>
+        <td>{{ obj.created }}</td>
+        <td>{{ obj.description }}</td>
+        <td>{{ obj.amount|abs|div:100 }} {{ obj.currency }}</td>
+        <td>{{ obj.local_amount|abs|div:100 }} {{ obj.local_currency }}</td>
+        <td>
+          {% if not obj.td_obj %}
+            <a class="btn btn-dark" href="{% url 'txid_new' obj.id %}">New TD</a>
+          {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
+
+
+

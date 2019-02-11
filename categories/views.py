@@ -215,3 +215,30 @@ def latest_monzo_transaction(request):
         pass
 
     return render(request, 'latest_transaction.html', context)
+
+
+@login_required(login_url='/admin')
+def week_list_view(request):
+    monzo = MonzoRequest()
+
+    t0 = time.time()
+    # get the list of transactions from monzo api
+    spending = monzo.get_week_of_spends()
+    req_1_secs = time.time() - t0
+
+    ids = [t['id'] for t in spending]
+    # get any TD objects with a matching ID
+    tds = list(TransactionData.objects.filter(pk__in=ids))
+
+    # Attach TransactionData object to monzo spends if it exists
+    for spend in spending:
+        spend['td_obj'] = None
+        for td in tds:
+            if td.txid == spend['id']:
+                spend['td_obj'] = td
+
+    # Put the latest transactions at the front of the list
+    spending = spending[::-1]
+
+    context = {'object_list': spending, 'reqs1secs': req_1_secs}
+    return render(request, 'week.html', context)
