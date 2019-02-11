@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h1>Spending Analysis</h1>
+
+<p>Total pennies spent in the last 7 days: {{ spending_sum_pennies }}</p>
+<p>Total ingested pennies in the last 7 days: {{ ingested_sum_pennies }}</p>
+<p>The diff: {{ diff }}</p>
+<p>The total uningested pennies in the last 7 days: {{ uningested_sum_pennies }}</p>
+<p>  (those last 2 number should be equal)</p>
+
+<p>count total_transactions: {{ total_transactions_count }}</p>
+<p>count uningested_transactions: {{ count_uningested }}</p>
+<p>count ingested_transactions: {{ count_ingested }}</p>
+
+<h2>Totals by top-level Category</h2>
+<p>{{ summary }}</p>
+
+{% endblock %}

@@ -4,6 +4,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import generic
 
+from collections import Counter
 import time
 
 from .forms import CategoryForm, QuestionForm, OptionForm, TransactionDataForm, QuestionAnswerForm
@@ -209,7 +210,7 @@ class TxidDeleteView(generic.edit.DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-### Monzo API Views ###
+### Composite Views ###
 
 @login_required(login_url='/admin/')
 def latest_monzo_transaction(request):
@@ -262,6 +263,57 @@ def week_list_view(request):
 
     context = {'object_list': spending, 'reqs1secs': req_1_secs}
     return render(request, 'week.html', context)
+
+
+def spending_view(request):
+    monzo = MonzoRequest()
+
+    spending = monzo.get_week_of_spends()
+
+    ############################### sums
+    spending_sum_pennies = abs(sum([t['amount'] for t in spending]))
+
+    ids = [t['id'] for t in spending]
+    # get any TD objects with a matching ID
+    recent_tds = list(TransactionData.objects.filter(pk__in=ids))
+
+    # lookup totals in monzo data of ids ingested as TransactionData
+    ingested_sum_pennies = 0
+    for td in recent_tds:
+        monzo_transaction = [t for t in spending if t['id'] == td.txid][0]
+        # spend amounts are always negative
+        ingested_sum_pennies -= monzo_transaction['amount']
+
+    diff = spending_sum_pennies - ingested_sum_pennies
+
+    uningested_transaction_ids = set(ids).difference(set([td.txid for td in recent_tds]))
+    uningested_transactions = [t for t in spending if t['id'] in uningested_transaction_ids]
+    uningested_sum_pennies = abs(sum([t['amount'] for t in uningested_transactions]))
+
+    ############################# some category stuff
+    ingested_transaction_ids = set(ids).intersection(set([td.txid for td in recent_tds]))
+    ingested_transactions_monzo = [t for t in spending if t['id'] in ingested_transaction_ids]
+    ingested_transactions_td = list(TransactionData.objects.filter(pk__in=ingested_transaction_ids))
+
+    summary = Counter()
+    for td in ingested_transactions_td:
+        # Get top-level category for each transaction
+        category = td.category.parent if td.category.parent else td.category
+        monzo_transaction = [t for t in ingested_transactions_monzo if t['id'] == td.txid][0]
+        # spend amounts are always negative
+        summary[category.name] -= monzo_transaction['amount']
+
+    context = {
+        'total_transactions_count': len(spending),
+        'spending_sum_pennies': spending_sum_pennies,
+        'ingested_sum_pennies': ingested_sum_pennies,
+        'count_ingested': len(recent_tds),
+        'diff': diff,
+        'uningested_sum_pennies': uningested_sum_pennies,
+        'count_uningested': len(uningested_transactions),
+        'summary': summary,
+    }
+    return render(request, 'spending.html', context)
 
 
 ### AJAX Views ###
