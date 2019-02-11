@@ -69,6 +69,10 @@ class TransactionDataForm(forms.ModelForm):
         model = TransactionData
         fields = ('txid', 'category')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['category'].label_from_instance = lambda obj: obj.get_hierarchical_name()
+
 
 class QuestionAnswerForm(forms.ModelForm):
     class Meta:
@@ -79,4 +83,5 @@ class QuestionAnswerForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['question'].queryset = Question.objects.all()
         self.fields['question'].required = False
+        self.fields['question'].label_from_instance = lambda obj: obj.get_hierarchical_name()
         self.fields['option_answer'].queryset = Option.objects.all()
