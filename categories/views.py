@@ -1,15 +1,14 @@
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import generic
 
-from datetime import datetime, timedelta
-import requests
 import time
 
 from .forms import CategoryForm, QuestionForm, OptionForm, TransactionDataForm, QuestionAnswerForm
 from .models import Category, Question, Option, TransactionData, QuestionAnswer
+
+from .integrations import MonzoRequest
 
 
 def index(request):
@@ -194,31 +193,18 @@ class TxidDeleteView(generic.edit.DeleteView):
 
 @login_required(login_url='/admin/')
 def latest_monzo_transaction(request):
-    one_week_ago = datetime.utcnow() - timedelta(days=7)
-    since = one_week_ago.isoformat(timespec='seconds') + 'Z'
-
-    # Get the latest transactions (in the last 7 days)
-    transactions_endpoint = 'https://api.monzo.com/transactions'
-    params = {'account_id': settings.MONZO_ACCOUNT_ID, 'since': since}
-    headers = {'Authorization': 'Bearer ' + settings.MONZO_BEARER}
+    monzo = MonzoRequest()
 
     t0 = time.time()
-    r = requests.get(transactions_endpoint, params=params, headers=headers)
+    spending = monzo.get_week_of_spends()
     req_1_secs = time.time() - t0
 
-    data = r.json()
-    spending = [t for t in data['transactions'] if t['include_in_spending']]
     latest_txid = spending[-1]['id']
 
     # Get the latest expenditure with full merchant data
-    params['expand[]'] = 'merchant'
-
     t0 = time.time()
-    r = requests.get(f'{transactions_endpoint}/{latest_txid}', params=params, headers=headers)
+    latest = monzo.get_transaction(latest_txid)
     req_2_secs = time.time() - t0
-
-    data = r.json()
-    latest = data['transaction']
 
     context = {'data': latest, 'reqs1secs': req_1_secs, 'reqs2secs': req_2_secs}
     try:
