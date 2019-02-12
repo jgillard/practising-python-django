@@ -214,24 +214,15 @@ class TxidDeleteView(generic.edit.DeleteView):
 
 @login_required(login_url='/admin/')
 def latest_monzo_transaction(request):
-    monzo = MonzoRequest()
-
     t0 = time.time()
-    spending = monzo.get_week_of_spends()
-    req_1_secs = time.time() - t0
+    latest = MonzoRequest().get_latest_transaction()
+    req_secs = time.time() - t0
 
-    latest_txid = spending[-1]['id']
-
-    # Get the latest expenditure with full merchant data
-    t0 = time.time()
-    latest = monzo.get_transaction(latest_txid)
-    req_2_secs = time.time() - t0
-
-    context = {'data': latest, 'reqs1secs': req_1_secs, 'reqs2secs': req_2_secs}
+    context = {'data': latest, 'reqs1secs': req_secs}
     try:
-        context['td'] = TransactionData.objects.get(pk=latest_txid)
+        context['td'] = TransactionData.objects.get(pk=latest['id'])
         context['qs'] = Question.objects.filter(category=context['td'].category)
-        context['qas'] = QuestionAnswer.objects.filter(txid=latest_txid)
+        context['qas'] = QuestionAnswer.objects.filter(txid=latest['id'])
     except TransactionData.DoesNotExist:
         pass
 

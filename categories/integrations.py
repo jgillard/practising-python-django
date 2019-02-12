@@ -32,3 +32,16 @@ class MonzoRequest:
         transaction = r.json()['transaction']
 
         return transaction
+
+    def get_latest_transaction(self) -> Dict:
+        spends = self.get_week_of_spends()
+
+        latest_txid = spends[-1]['id']
+
+        params = {**self.params, 'expand[]': 'merchant'}
+
+        r = requests.get(f'{self.transactions_endpoint}/{latest_txid}', params=params, headers=self.headers)
+
+        transaction = r.json()['transaction']
+
+        return transaction
