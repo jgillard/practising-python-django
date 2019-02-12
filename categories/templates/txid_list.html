@@ -3,7 +3,11 @@
 
 {% block content %}
 
-<h2>Stored TXIDs</h2>
+<div>
+  <h2 class="d-inline-block">Stored TXIDs</h2>
+  <a class="btn btn-dark float-right" href="{% url 'txid_new' %}">Add New</a>
+</div>
+
 <ul>
   {% for txid in object_list %}
   <li>
@@ -16,7 +20,5 @@
   </li>
   {% endfor %}
 </ul>
-
-<a class="btn btn-dark" href="{% url 'txid_new' %}">New TXID</a>
 
 {% endblock %}

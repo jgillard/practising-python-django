@@ -25,6 +25,9 @@ class CategoryForm(forms.ModelForm):
         if form_parent and form_parent.name == self.instance.name:
             raise ValidationError('Category cannot be its own parent')
 
+        if form_parent and form_parent.parent:
+            raise ValidationError('Cannot currently nest Categories that deep')
+
         return cleaned_data
 
 

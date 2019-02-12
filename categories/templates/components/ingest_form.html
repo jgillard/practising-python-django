@@ -6,13 +6,17 @@
   {{ form_qa.as_p }}
   <button type="submit" class="save btn btn-dark">Save</button>
 </form>
+<br>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
 <script>
+  const noOptionHtml = '<option value="">---------</option>'
+
   $( document ).ready(function() {
-    $("#id_question").html('<option value="">---------</option>');
+    $("#id_question").html(noOptionHtml);
     $("#id_option_answer").parent().hide();
     $("#id_number_answer").parent().hide();
+    $("#id_number_answer").attr('type', 'tel');
   });
 
   $("#id_category").change(function () {
@@ -37,9 +41,10 @@
     $.ajax({
       url: url,
       data: {'question': questionId},
-      success: function (data) {
-        if (data == 'n/a') {
+      success: function (data, statusText, xhr) {
+        if (xhr.status == 204) {
           // question has a number answer type
+          $("#id_option_answer").html(noOptionHtml);
           $("#id_option_answer").parent().hide();
           $("#id_number_answer").parent().show();
         } else {

@@ -305,8 +305,11 @@ def ingest_view(request):
 ### AJAX Views ###
 
 def load_questions_for_category(request):
+    # Also returns questions from a parent category
     category_id = request.GET.get('category')
-    questions = Question.objects.filter(category=category_id)
+    category = Category.objects.get(pk=category_id)
+    parent_id = category.parent.pk
+    questions = Question.objects.filter(category__in=[category_id, parent_id])
     return render(request, 'components/question_dropdown_list.html', {'questions': questions})
 
 
@@ -314,7 +317,7 @@ def load_options_for_question(request):
     question_id = request.GET.get('question')
     question = Question.objects.get(pk__exact=question_id)
     if question.answer_type == 'N':
-        return HttpResponse('n/a')
+        return HttpResponse(status=204)
     options = Option.objects.filter(question=question_id)
     return render(request, 'components/option_dropdown_list.html', {'options': options})
 

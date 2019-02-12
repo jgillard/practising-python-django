@@ -13,11 +13,10 @@
 <table class="table">
  <thead>
     <tr>
-      <th scope="col">ID</th>
-      <th scope="col">Created</th>
       <th scope="col">Desc</th>
+      <th scope="col">Created</th>
       <th scope="col">Cost</th>
-      <th scope="col">Local Cost</th>
+      <th scope="col">Local</th>
     </tr>
   </thead>
   <tbody>
@@ -25,13 +24,12 @@
       <tr {% if obj.td_obj %}class="table-success"{% endif %}>
         <td>
           {% if obj.td_obj %}
-            <a href="{% url 'txid_detail' obj.id %}">{{ obj.id }}</a>
+            <a href="{% url 'txid_detail' obj.id %}">{{ obj.description }}</a>
           {% else %}
-            {{ obj.id }}
+            {{ obj.description }}
           {% endif %}
         </td>
         <td>{{ obj.created }}</td>
-        <td>{{ obj.description }}</td>
         <td>{{ obj.amount|abs|div:100 }} {{ obj.currency }}</td>
         <td>{{ obj.local_amount|abs|div:100 }} {{ obj.local_currency }}</td>
         <td>
