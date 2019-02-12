@@ -1,0 +1,55 @@
+<form method="POST" id="txidForm"
+      data-questions-url="{% url 'ajax_load_questions_for_category' %}"
+      data-options-url="{% url 'ajax_load_options_for_question' %}">
+  {% csrf_token %}
+  {{ form_td.as_p }}
+  {{ form_qa.as_p }}
+  <button type="submit" class="save btn btn-dark">Save</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
+<script>
+  $( document ).ready(function() {
+    $("#id_question").html('<option value="">---------</option>');
+    $("#id_option_answer").parent().hide();
+    $("#id_number_answer").parent().hide();
+  });
+
+  $("#id_category").change(function () {
+    var url = $("#txidForm").attr("data-questions-url");
+    var categoryId = $(this).val();
+    if (categoryId === '') { return; }
+
+    $.ajax({
+      url: url,
+      data: {'category': categoryId},
+      success: function (data) {
+        $("#id_question").html(data);
+      }
+    });
+
+  });
+
+  $("#id_question").change(function () {
+    var url = $("#txidForm").attr("data-options-url");
+    var questionId = $(this).val();
+
+    $.ajax({
+      url: url,
+      data: {'question': questionId},
+      success: function (data) {
+        if (data == 'n/a') {
+          // question has a number answer type
+          $("#id_option_answer").parent().hide();
+          $("#id_number_answer").parent().show();
+        } else {
+          // question has a string answer type
+          $("#id_option_answer").html(data);
+          $("#id_option_answer").parent().show();
+          $("#id_number_answer").parent().hide();
+        }
+      }
+    });
+
+  });
+</script>

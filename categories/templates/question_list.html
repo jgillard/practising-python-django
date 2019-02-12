@@ -8,13 +8,7 @@
   {% for question in object_list %}
   <li>
     <a href="{% url 'question_detail' question.id %}">
-      <p>
-        ID: {{ question.id }}<br>
-        Title: {{ question.title }}<br>
-        Answer type: {{ question.get_answer_type_display }}<br>
-        Category ID: {{ question.category.id }}<br>
-        Category Name: {{ question.category.name }}<br>
-      </p>
+      {% include 'components/question_display.html' %}
     </a>
   </li>
   {% endfor %}

@@ -8,11 +8,7 @@
   {% for category in object_list %}
   <li>
     <a href="{% url 'category_detail' category.id %}">
-      <p>
-        ID: {{ category.id }}<br>
-        Name: {{ category.name }}<br>
-        Parent: {{ category.parent|default_if_none:"---" }}<br>
-      </p>
+      {% include 'components/category_display.html' %}
     </a>
   </li>
   {% endfor %}

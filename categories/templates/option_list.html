@@ -8,12 +8,7 @@
   {% for option in object_list %}
   <li>
     <a href="{% url 'option_detail' option.id %}">
-      <p>
-        ID: {{ option.id }}<br>
-        Title: {{ option.title }}<br>
-        Question ID: {{ option.question.id }}<br>
-        Question Title: {{ option.question.title }}<br>
-      </p>
+      {% include 'components/option_display.html' %}
     </a>
   </li>
   {% endfor %}

@@ -4,12 +4,8 @@
 {% block content %}
 
 <h2>Option</h2>
-<p>
-  ID: {{ option.id }}<br>
-  Title: {{ option.title }}<br>
-  Question ID: {{ option.question.id }}<br>
-  Question Title: {{ option.question.title }}<br>
-</p>
+
+{% include 'components/option_display.html' %}
 
 <a class="btn btn-dark" href="{% url 'option_edit' option.pk %}">Edit Option</a>
 <a class="btn btn-danger" href="{% url 'option_delete' option.pk %}">Delete Option</a>

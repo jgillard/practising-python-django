@@ -1,0 +1,5 @@
+<p>
+  ID: {{ category.id }}<br>
+  Name: {{ category.name }}<br>
+  Parent: {{ category.parent|default_if_none:"---" }}<br>
+</p>
