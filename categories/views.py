@@ -290,6 +290,18 @@ def spending_view(request):
     return render(request, 'spending.html', context)
 
 
+@login_required(login_url='/admin/')
+def ingest_view(request):
+    if request.method == 'POST':
+        return process_txid_post(request)
+    else:
+        transaction = MonzoRequest().get_latest_uningested_transaction()
+        form_td = TransactionDataForm(initial={'txid': transaction['id']})
+        form_qa = QuestionAnswerForm()
+        context = {'data': transaction, 'form_td': form_td, 'form_qa': form_qa}
+        return render(request, 'ingest.html', context)
+
+
 ### AJAX Views ###
 
 def load_questions_for_category(request):

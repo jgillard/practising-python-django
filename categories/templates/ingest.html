@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load mathfilters %}
+
+
+{% block content %}
+
+<h1>Ingest View</h1>
+
+<div class="card">
+  <img src="{{ data.merchant.logo }}" class="card-img-top" alt="Merchant Image">
+  <div class="card-body">
+    <h5 class="card-title">{{ data.description }}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">Merchant: {{ data.merchant.name }}</h6>
+    <h6 class="card-subtitle mb-2 text-muted">{{ data.created }}</h6>
+    <p class="card-text">Category: {{ data.category|title }}</p>
+    <p class="card-text">Cost: {{ data.amount|abs|div:100 }} {{ data.currency }}</p>
+    <p class="card-text">Local Cost: {{ data.local_amount|abs|div:100 }} {{ data.local_currency }}</p>
+    <a href="#" class="btn btn-primary">Save</a>
+    <a href="#" class="btn btn-light">Skip</a>
+  </div>
+</div>
+
+<br><br>
+
+{% include 'components/ingest_form.html' %}
+
+{% endblock %}
