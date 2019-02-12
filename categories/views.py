@@ -165,24 +165,14 @@ def new_txid(request, txid=None):
     # requires for additional/configurable number of QAs
 
     if request.method == 'POST':
-        form_td = TransactionDataForm(request.POST)
-        form_qa = QuestionAnswerForm(request.POST)
-        if all([form_td.is_valid(), form_qa.is_valid()]):
-            td = form_td.save()
-            if form_qa.cleaned_data:
-                # don't create QA if no question supplied
-                if request.POST['question'] != '':
-                    qa = form_qa.save(commit=False)
-                    qa.txid = td
-                    qa.save()
-            return redirect('txid_detail', txid=td.txid)
+        return process_txid_post(request)
     else:
         prefill_data = {'txid': txid}
         form_td = TransactionDataForm(initial=prefill_data)
         form_qa = QuestionAnswerForm()
 
-    context = {'form_td': form_td, 'form_qa': form_qa}
-    return render(request, 'txid_new.html', context=context)
+        context = {'form_td': form_td, 'form_qa': form_qa}
+        return render(request, 'txid_new.html', context=context)
 
 
 class TxidDeleteView(generic.edit.DeleteView):
@@ -256,6 +246,7 @@ def week_list_view(request):
     return render(request, 'week.html', context)
 
 
+@login_required(login_url='/admin')
 def spending_view(request):
     monzo = MonzoRequest()
 
@@ -264,26 +255,18 @@ def spending_view(request):
     ############################### sums
     spending_sum_pennies = abs(sum([t['amount'] for t in spending]))
 
-    ids = [t['id'] for t in spending]
-    # get any TD objects with a matching ID
-    recent_tds = list(TransactionData.objects.filter(pk__in=ids))
+    ingested_spends = monzo.get_week_of_ingested_spends()
 
-    # lookup totals in monzo data of ids ingested as TransactionData
-    ingested_sum_pennies = 0
-    for td in recent_tds:
-        monzo_transaction = [t for t in spending if t['id'] == td.txid][0]
-        # spend amounts are always negative
-        ingested_sum_pennies -= monzo_transaction['amount']
+    ingested_sum_pennies = abs(sum([t['amount'] for t in ingested_spends]))
 
     diff = spending_sum_pennies - ingested_sum_pennies
 
-    uningested_transaction_ids = set(ids).difference(set([td.txid for td in recent_tds]))
-    uningested_transactions = [t for t in spending if t['id'] in uningested_transaction_ids]
+    uningested_transactions = monzo.get_week_of_uningested_spends()
     uningested_sum_pennies = abs(sum([t['amount'] for t in uningested_transactions]))
 
     ############################# some category stuff
-    ingested_transaction_ids = set(ids).intersection(set([td.txid for td in recent_tds]))
-    ingested_transactions_monzo = [t for t in spending if t['id'] in ingested_transaction_ids]
+    ingested_transactions_monzo = monzo.get_week_of_ingested_spends()
+    ingested_transaction_ids = [t['id'] for t in ingested_transactions_monzo]
     ingested_transactions_td = list(TransactionData.objects.filter(pk__in=ingested_transaction_ids))
 
     summary = Counter()
@@ -298,7 +281,7 @@ def spending_view(request):
         'total_transactions_count': len(spending),
         'spending_sum_pennies': spending_sum_pennies,
         'ingested_sum_pennies': ingested_sum_pennies,
-        'count_ingested': len(recent_tds),
+        'count_ingested': len(ingested_spends),
         'diff': diff,
         'uningested_sum_pennies': uningested_sum_pennies,
         'count_uningested': len(uningested_transactions),
@@ -312,7 +295,7 @@ def spending_view(request):
 def load_questions_for_category(request):
     category_id = request.GET.get('category')
     questions = Question.objects.filter(category=category_id)
-    return render(request, 'dropdowns/question_dropdown_list.html', {'questions': questions})
+    return render(request, 'components/question_dropdown_list.html', {'questions': questions})
 
 
 def load_options_for_question(request):
@@ -321,4 +304,20 @@ def load_options_for_question(request):
     if question.answer_type == 'N':
         return HttpResponse('n/a')
     options = Option.objects.filter(question=question_id)
-    return render(request, 'dropdowns/option_dropdown_list.html', {'options': options})
+    return render(request, 'components/option_dropdown_list.html', {'options': options})
+
+
+### Shared Logic ###
+
+def process_txid_post(request):
+    form_td = TransactionDataForm(request.POST)
+    form_qa = QuestionAnswerForm(request.POST)
+    if all([form_td.is_valid(), form_qa.is_valid()]):
+        td = form_td.save()
+        if form_qa.cleaned_data:
+            # don't create QA if no question supplied
+            if request.POST['question'] != '':
+                qa = form_qa.save(commit=False)
+                qa.txid = td
+                qa.save()
+        return redirect('txid_detail', txid=td.txid)
