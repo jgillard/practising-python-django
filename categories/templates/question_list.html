@@ -3,7 +3,11 @@
 
 {% block content %}
 
-<h2>Questions</h2>
+<div>
+  <h2 class="d-inline-block">Questions</h2>
+  <a class="btn btn-dark float-right" href="{% url 'question_new' %}">Add New</a>
+</div>
+
 <ul>
   {% for question in object_list %}
   <li>
@@ -13,7 +17,5 @@
   </li>
   {% endfor %}
 </ul>
-
-<a class="btn btn-dark" href="{% url 'question_new' %}">New Question</a>
 
 {% endblock %}
