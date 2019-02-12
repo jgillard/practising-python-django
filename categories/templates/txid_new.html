@@ -15,9 +15,16 @@
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
 <script>
+  $( document ).ready(function() {
+    $("#id_question").html('<option value="">---------</option>');
+    $("#id_option_answer").parent().hide();
+    $("#id_number_answer").parent().hide();
+  });
+
   $("#id_category").change(function () {
     var url = $("#txidForm").attr("data-questions-url");
     var categoryId = $(this).val();
+    if (categoryId === '') { return; }
 
     $.ajax({
       url: url,
@@ -37,16 +44,15 @@
       url: url,
       data: {'question': questionId},
       success: function (data) {
-        if (data == '') {
-          // question has a number answer
-          $("#id_option_answer").parent().hide()
-          $("#id_number_answer").parent().show()
+        if (data == 'n/a') {
+          // question has a number answer type
+          $("#id_option_answer").parent().hide();
+          $("#id_number_answer").parent().show();
         } else {
-          // question has a string answer
+          // question has a string answer type
           $("#id_option_answer").html(data);
-          $("#id_option_answer").parent().show()
-          $("#id_number_answer").parent().hide()
-
+          $("#id_option_answer").parent().show();
+          $("#id_number_answer").parent().hide();
         }
       }
     });

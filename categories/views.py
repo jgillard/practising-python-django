@@ -78,6 +78,11 @@ class QuestionCreateView(generic.edit.CreateView):
     template_name = 'generic_new.html'
     extra_context = {'class_name': model.__name__}
 
+    def post(self, request, *args, **kwargs):
+        if 'save-and-add-another' in request.POST:
+            self.success_url = reverse_lazy('question_new')
+        return super().post(self, request, *args, **kwargs)
+
 
 class QuestionUpdateView(generic.edit.UpdateView):
     model = Question
@@ -112,6 +117,11 @@ class OptionCreateView(generic.edit.CreateView):
     form_class = OptionForm
     template_name = 'generic_new.html'
     extra_context = {'class_name': model.__name__}
+
+    def post(self, request, *args, **kwargs):
+        if 'save-and-add-another' in request.POST:
+            self.success_url = reverse_lazy('option_new')
+        return super().post(self, request, *args, **kwargs)
 
 
 class OptionUpdateView(generic.edit.UpdateView):
@@ -262,7 +272,8 @@ def load_questions_for_category(request):
 
 def load_options_for_question(request):
     question_id = request.GET.get('question')
+    question = Question.objects.get(pk__exact=question_id)
+    if question.answer_type == 'N':
+        return HttpResponse('n/a')
     options = Option.objects.filter(question=question_id)
-    if len(options) == 0:
-        return HttpResponse()
     return render(request, 'dropdowns/option_dropdown_list.html', {'options': options})
