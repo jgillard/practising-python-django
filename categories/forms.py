@@ -78,4 +78,5 @@ class QuestionAnswerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['question'].queryset = Question.objects.all()
+        self.fields['question'].required = False
         self.fields['option_answer'].queryset = Option.objects.all()

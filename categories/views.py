@@ -169,9 +169,11 @@ def new_txid(request, txid=None):
         if all([form_td.is_valid(), form_qa.is_valid()]):
             td = form_td.save()
             if form_qa.cleaned_data:
-                qa = form_qa.save(commit=False)
-                qa.txid = td
-                qa.save()
+                # don't create QA if no question supplied
+                if request.POST['question'] != '':
+                    qa = form_qa.save(commit=False)
+                    qa.txid = td
+                    qa.save()
             return redirect('txid_detail', txid=td.txid)
     else:
         prefill_data = {'txid': txid}
