@@ -247,7 +247,7 @@ def week_list_view(request):
 
 
 @login_required(login_url='/admin')
-def spending_view(request):
+def analysis_view(request):
     monzo = MonzoRequest()
 
     spending = monzo.get_week_of_spends()
@@ -287,7 +287,7 @@ def spending_view(request):
         'count_uningested': len(uningested_transactions),
         'summary': summary,
     }
-    return render(request, 'spending.html', context)
+    return render(request, 'analysis.html', context)
 
 
 @login_required(login_url='/admin/')

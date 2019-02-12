@@ -30,7 +30,7 @@ urlpatterns = [
     path('txid/new/<str:txid>', views.new_txid, name='txid_new'),
     path('txid/<str:txid>/delete/', views.TxidDeleteView.as_view(), name='txid_delete'),
     path('week/', views.week_list_view, name='week'),
-    path('spending/', views.spending_view, name='spending_view'),
+    path('analysis/', views.analysis_view, name='analysis_view'),
     path('ingest/', views.ingest_view, name='ingest_view'),
 
     path('ajax/load-questions-for-category/', views.load_questions_for_category,
