@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Question, Option, TransactionData, QuestionAnswer
+from .models import Category, Question, Option, TransactionData, QuestionAnswer, MonzoUser
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -32,6 +32,10 @@ class QuestionAnswerAdmin(admin.ModelAdmin):
     list_display = ('txid', 'question', 'option_answer', 'number_answer')
 
 
+class MonzoUserAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(Category, CategoryAdmin)
 
 admin.site.register(Question, QuestionAdmin)
@@ -41,3 +45,5 @@ admin.site.register(Option, OptionAdmin)
 admin.site.register(TransactionData, TransactionDataAdmin)
 
 admin.site.register(QuestionAnswer, QuestionAnswerAdmin)
+
+admin.site.register(MonzoUser, MonzoUserAdmin)

@@ -143,3 +143,26 @@ class QuestionAnswer(models.Model):
 
     class Meta:
         verbose_name_plural = 'QuestionAnswers'
+
+
+class MonzoUser(models.Model):
+    id = models.CharField(
+        primary_key=True,
+        max_length=40,
+        unique=True,
+    )
+
+    account_id = models.CharField(
+        max_length=40
+    )
+
+    access_token = models.CharField(
+        max_length=300,
+    )
+
+    refresh_token = models.CharField(
+        max_length=300,
+    )
+
+    class Meta:
+        verbose_name_plural = 'MonzoUsers'
