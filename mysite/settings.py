@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 from configparser import RawConfigParser
-from django.core.exceptions import ImproperlyConfigured
 import os
 import django_heroku
 
@@ -135,3 +134,9 @@ django_heroku.settings(locals())
 # Additional env vars
 config = RawConfigParser()
 config.read(BASE_DIR + '/settings_dev.ini')
+MONZO_CLIENT_ID = config.get('monzo', 'client_id') \
+    if config.has_option('monzo', 'client_id') \
+    else os.environ.get('MONZO_CLIENT_ID')
+MONZO_CLIENT_SECRET = config.get('monzo', 'client_secret') \
+    if config.has_option('monzo', 'client_secret') \
+    else os.environ.get('MONZO_CLIENT_SECRET')

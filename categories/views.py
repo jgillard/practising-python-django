@@ -1,16 +1,19 @@
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 
 from collections import Counter
 import time
+import requests
 
 from .forms import CategoryForm, QuestionForm, OptionForm, TransactionDataForm, QuestionAnswerForm
-from .models import Category, Question, Option, TransactionData, QuestionAnswer
+from .models import Category, Question, Option, TransactionData, QuestionAnswer, MonzoUser
 
 from .integrations import MonzoRequest
+from mysite.settings import MONZO_CLIENT_ID, MONZO_CLIENT_SECRET
 
 
 def index(request):
@@ -212,7 +215,15 @@ class TxidDeleteView(generic.edit.DeleteView):
 @login_required(login_url='/admin/')
 def latest_monzo_transaction(request):
     t0 = time.time()
-    latest = MonzoRequest().get_latest_transaction()
+
+    try:
+        monzo = MonzoRequest()
+    except PermissionDenied:
+        request.session['final_redirect'] = reverse('latest_transaction')
+        return start_login_view(request)
+
+    latest = monzo.get_latest_transaction()
+
     req_secs = time.time() - t0
 
     context = {'data': latest, 'reqs1secs': req_secs}
@@ -228,7 +239,11 @@ def latest_monzo_transaction(request):
 
 @login_required(login_url='/admin')
 def week_list_view(request):
-    monzo = MonzoRequest()
+    try:
+        monzo = MonzoRequest()
+    except PermissionDenied:
+        request.session['final_redirect'] = reverse('week')
+        return start_login_view(request)
 
     t0 = time.time()
     # get the list of transactions from monzo api
@@ -255,7 +270,11 @@ def week_list_view(request):
 
 @login_required(login_url='/admin')
 def analysis_view(request):
-    monzo = MonzoRequest()
+    try:
+        monzo = MonzoRequest()
+    except PermissionDenied:
+        request.session['final_redirect'] = reverse('analysis')
+        return start_login_view(request)
 
     spending = monzo.get_week_of_spends()
 
@@ -302,11 +321,69 @@ def ingest_view(request):
     if request.method == 'POST':
         return process_txid_post(request)
     else:
-        transaction = MonzoRequest().get_latest_uningested_transaction()
+        try:
+            monzo = MonzoRequest()
+        except PermissionDenied:
+            request.session['final_redirect'] = reverse('ingest')
+            return start_login_view(request)
+
+        transaction = monzo.get_latest_uningested_transaction()
         form_td = TransactionDataForm(initial={'txid': transaction['id']})
         form_qa = QuestionAnswerForm()
         context = {'data': transaction, 'form_td': form_td, 'form_qa': form_qa}
         return render(request, 'ingest.html', context)
+
+
+### Login Views ###
+
+@login_required(login_url='/admin/')
+def start_login_view(request):
+    client_id = MONZO_CLIENT_ID
+    redirect_uri = request.build_absolute_uri(reverse('oauth_callback'))
+    # TODO: look up best practices for the state
+    state_token = 'foobar'
+
+    url = (
+        f'https://auth.monzo.com/?client_id={client_id}&'
+        f'redirect_uri={redirect_uri}&'
+        f'response_type= code&'
+        f'state={state_token}'
+    )
+
+    return redirect(url)
+
+
+@login_required(login_url='/admin/')
+def oauth_callback_view(request):
+    state = request.GET.get('state')
+    # TODO: look up best practices for the state
+    assert (state == 'foobar')
+
+    # this should be in monzorequest
+    url = 'https://api.monzo.com/oauth2/token'
+    client_id = MONZO_CLIENT_ID
+    client_secret = MONZO_CLIENT_SECRET
+    redirect_uri = request.build_absolute_uri(reverse('oauth_callback'))
+    authorization_code = request.GET.get('code')
+
+    data = {
+        'grant_type': 'authorization_code',
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'redirect_uri': redirect_uri,
+        'code': authorization_code,
+    }
+
+    r = requests.post(url, data)
+    data = r.json()
+
+    monzo_user = MonzoUser.objects.all()[0]
+    monzo_user.access_token = data['access_token']
+    monzo_user.refresh_token = data['refresh_token']
+    monzo_user.save()
+
+    if r.status_code == 200:
+        return redirect(request.session['final_redirect'])
 
 
 ### AJAX Views ###

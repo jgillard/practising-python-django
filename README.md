@@ -1,12 +1,12 @@
 # Practising Python Django
 
-# About
+## About
 
 A continuation of the project started in https://github.com/jgillard/practising-go-tdd.
 
 I intend to cover Django with a Postgres backend, Django Rest Framework, and maybe GraphQL.
 
-# Installation
+## Installation
 
 This has been developed with Python 3.7.2, and is currently using Django 2.1.5.
 
@@ -22,7 +22,14 @@ In production this is substituted by environment variables in Heroku.
 
 See the template `settings_dev.ini.template` for the required settings.
 
-# Deployment
+## Manual Steps
+All setup has not been automated yet. This includes:
+
+* Creation of 1 user in the `categories_monzouser` Postgres table
+* Filling out `settings_dev.ini` for local development, or the Heroku env vars for the deployment.
+
+
+## Deployment
 
 Currently deployed on every push to master by Heroku.
 

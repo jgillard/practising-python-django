@@ -33,6 +33,9 @@ urlpatterns = [
     path('analysis/', views.analysis_view, name='analysis_view'),
     path('ingest/', views.ingest_view, name='ingest_view'),
 
+    path('login/', views.start_login_view, name='start_login_view'),
+    path('oauth-callback/', views.oauth_callback_view, name='oauth_callback'),
+
     path('ajax/load-questions-for-category/', views.load_questions_for_category,
          name='ajax_load_questions_for_category'),
     path('ajax/load-options-for-question/', views.load_options_for_question,

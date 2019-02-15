@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List
 
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 
 import requests
@@ -29,12 +30,20 @@ class MonzoRequest:
             if data['code'] == 'bad_request.invalid_token':
                 print('access token has invalid, refreshing...')
                 self.refresh_access_token()
+            elif data['code'] == 'unauthorized.bad_access_token.evicted':
+                print('access token has been evicted by another login, refreshing...')
+                try:
+                    self.refresh_access_token()
+                except PermissionDenied as e:
+                    raise e
+            else:
+                print('Whoami response unhandled')
+                print(f'  status code: {r.status_code}')
+                print(f'  text: {r.text}')
         else:
             if data['authenticated'] is not True:
                 print('access token has expired, refreshing...')
                 self.refresh_access_token()
-            else:
-                print('access token is valid')
 
     def refresh_access_token(self) -> None:
         data = {
@@ -46,6 +55,21 @@ class MonzoRequest:
         
         r = requests.post(self.refresh_endpoint, data)
         data = r.json()
+
+        if r.status_code != 200:
+            if data['code'] == 'unauthorized.bad_refresh_token.evicted':
+                # for the webhook?
+                print('refresh token has been evicted by another login, well shit')
+                # raise PermissionDenied to then redirect user to login page
+                raise PermissionDenied('refresh token evicted by another login')
+            elif data['code'] == 'unauthorized.bad_refresh_token':
+                print('refresh token invalid')
+                # raise PermissionDenied to then redirect user to login page
+                raise PermissionDenied('refresh token invalid')
+            else:
+                print('Token refresh response unhandled')
+                print(f'  status code: {r.status_code}')
+                print(f'  text: {r.text}')
 
         self.monzo_user.access_token = data['access_token']
         self.monzo_user.refresh_token = data['refresh_token']
