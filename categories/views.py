@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
@@ -12,7 +11,7 @@ import requests
 from .forms import CategoryForm, QuestionForm, OptionForm, TransactionDataForm, QuestionAnswerForm
 from .models import Category, Question, Option, TransactionData, QuestionAnswer, MonzoUser
 
-from .integrations import MonzoRequest
+from .monzo_integration import MonzoRequest, NoAccessTokenException
 from mysite.settings import MONZO_CLIENT_ID, MONZO_CLIENT_SECRET
 
 
@@ -216,9 +215,11 @@ class TxidDeleteView(generic.edit.DeleteView):
 def latest_monzo_transaction(request):
     t0 = time.time()
 
+    # This try seems wrong, is not DRY
     try:
         monzo = MonzoRequest()
-    except PermissionDenied:
+    except NoAccessTokenException:
+        # Needs clarifying/documenting
         request.session['final_redirect'] = reverse('latest_transaction')
         return start_login_view(request)
 
@@ -239,9 +240,11 @@ def latest_monzo_transaction(request):
 
 @login_required(login_url='/admin')
 def week_list_view(request):
+    # This try seems wrong, is not DRY
     try:
         monzo = MonzoRequest()
-    except PermissionDenied:
+    except NoAccessTokenException:
+        # Needs clarifying/documenting
         request.session['final_redirect'] = reverse('week')
         return start_login_view(request)
 
@@ -270,9 +273,11 @@ def week_list_view(request):
 
 @login_required(login_url='/admin')
 def analysis_view(request):
+    # This try seems wrong, is not DRY
     try:
         monzo = MonzoRequest()
-    except PermissionDenied:
+    except NoAccessTokenException:
+        # Needs clarifying/documenting
         request.session['final_redirect'] = reverse('analysis')
         return start_login_view(request)
 
@@ -321,9 +326,11 @@ def ingest_view(request):
     if request.method == 'POST':
         return process_txid_post(request)
     else:
+        # This try seems wrong, is not DRY
         try:
             monzo = MonzoRequest()
-        except PermissionDenied:
+        except NoAccessTokenException:
+            # Needs clarifying/documenting
             request.session['final_redirect'] = reverse('ingest')
             return start_login_view(request)
 
