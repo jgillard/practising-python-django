@@ -7,13 +7,13 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import permissions, viewsets
 
 from .forms import *
 from .models import *
 from .serializers import *
-
 from .monzo_integration import get_login_url, exchange_authorization_code, OAUTH_STATE_TOKEN
 
 
@@ -303,6 +303,19 @@ def oauth_callback_view(request):
     exchange_authorization_code(authorization_code, redirect_uri)
 
     return redirect(request.session['final_redirect'])
+
+
+### Webhook Views ###
+
+@csrf_exempt
+def webhook_monzo_view(request):
+    data = json.loads(request.body)
+    assert (data['type'] == 'transaction.created')
+
+    if data['data']['is_load'] is not True:
+        MonzoRequest().create_feed_item(request)
+
+    return HttpResponse(status=204)
 
 
 ### AJAX Views ###

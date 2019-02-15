@@ -181,6 +181,27 @@ class MonzoRequest:
             t for t in spends if t['id'] in week_uningested_ids]
         return week_uningested_monzo_transactions
 
+    def create_feed_item(self, request) -> None:
+        # Create a Monzo feed item that redirects to `ingest_view`
+        url = request.build_absolute_uri(reverse('ingest_view'))
+        image_url = f'{request.get_host()}/{static("flying-money.gif")}'
+
+        data = {
+            'account_id': self.monzo_user.account_id,
+            'type': 'basic',
+            'url': url,
+            'params[title]': 'Django-Categories',
+            'params[body]': 'Tap to categorise the spend you just made',
+            'params[image_url]': image_url,
+        }
+
+        r = requests.post(self.feed_endpoint, data, headers=self.headers)
+
+        print(r.url)
+        print(r.text)
+
+        print(r)
+
 
 def get_login_url(redirect_uri: str) -> str:
     client_id = MONZO_CLIENT_ID
