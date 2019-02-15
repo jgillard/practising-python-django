@@ -9,8 +9,12 @@ import requests
 from .models import TransactionData, MonzoUser
 
 
+class MonzoException(Exception):
+    pass
+
+
 # Does this make sense?
-class NoAccessTokenException(Exception):
+class NoAccessTokenException(MonzoException):
     pass
 
 
