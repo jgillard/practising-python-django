@@ -119,6 +119,13 @@ class OptionCreateView(generic.edit.CreateView):
     template_name = 'generic_new.html'
     extra_context = {'class_name': model.__name__}
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        question_id = self.request.GET.get('question')
+        # Passes question_id into the Form
+        kwargs['initial'].update({'question': question_id})
+        return kwargs
+
     def post(self, request, *args, **kwargs):
         if 'save-and-add-another' in request.POST:
             self.success_url = reverse_lazy('option_new')
