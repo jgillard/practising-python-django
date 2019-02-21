@@ -35,6 +35,14 @@ class Category(models.Model):
         else:
             return f'{self.parent.name} -> {self.name}'
 
+    @property
+    def questions(self):
+        category_questions = self.question_set.all()
+        parent_category_questions = Question.objects.none()
+        if self.parent:
+            parent_category_questions = self.parent.question_set.all()
+        return category_questions.union(parent_category_questions)
+
 
 class Question(models.Model):
     OPTION_TYPE_CHOICES = (
@@ -109,6 +117,16 @@ class TransactionData(models.Model):
 
     def __str__(self):
         return self.txid
+
+    @property
+    def applicable_questions(self):
+        category_questions = Question.objects.filter(category=self.category)
+        parent_category_questions = Question.objects.filter(category=self.category.parent)
+        return category_questions.union(parent_category_questions)
+
+    @property
+    def question_answers(self):
+        return self.questionanswer_set.all()
 
 
 class QuestionAnswer(models.Model):

@@ -179,10 +179,10 @@ class TxidDeleteView(generic.edit.DeleteView):
         context = super().get_context_data(**kwargs)
 
         # add debug data for deletions
-        td = repr(context['object'])
-        qas = list(QuestionAnswer.objects.filter(txid__exact=context['object']))
-        context['footer'] = f'''In addition to the TransactionData: {td},
-            the following QuestionAnswer objects will be first be deleted {qas}'''
+        td = context['object']
+        qas = td.question_answers
+        context['footer'] = f'''In addition to the TransactionData: {repr(td)},
+        the following QuestionAnswer objects will be first be deleted {list(qas)}'''
 
         return context
 
