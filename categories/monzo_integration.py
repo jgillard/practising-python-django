@@ -32,7 +32,6 @@ class MonzoAuth:
 
     def __init__(self):
         # Read tokens saved in DB
-        # Catch user not in DB?
         self._monzo_user = MonzoUser.objects.all()[0]
         self._access_token = self._monzo_user.access_token
         self._refresh_token = self._monzo_user.refresh_token
@@ -48,12 +47,25 @@ class MonzoAuth:
             self.use_refresh_token()
             print('refresh was successful')
             return self._access_token
-        # this likely isn't best practice
         except PermissionDenied as e:
             print('refresh was NOT successful, need a redirect to the login page')
-            print(e)
-            # Should this happen?
-            raise NoAccessTokenException()
+            raise NoAccessTokenException(e)
+
+    @access_token.setter
+    def access_token(self, value):
+        self._access_token = value
+        self._monzo_user.access_token = value
+        self._monzo_user.save()
+
+    @property
+    def refresh_token(self):
+        return self._refresh_token
+
+    @refresh_token.setter
+    def refresh_token(self, value):
+        self._refresh_token = value
+        self._monzo_user.refresh_token = value
+        self._monzo_user.save()
 
     def access_token_valid(self) -> bool:
         # Call Monzo's whoami endpoint to determine token state
@@ -84,14 +96,8 @@ class MonzoAuth:
         data = r.json()
 
         if r.status_code == 200:
-            # Likely should not be keeping these in memory
-            # Will depend how the class is used
-            self._access_token = data['access_token']
-            self._refresh_token = data['refresh_token']
-
-            self._monzo_user.access_token = data['access_token']
-            self._monzo_user.refresh_token = data['refresh_token']
-            self._monzo_user.save()
+            self.access_token = data['access_token']
+            self.refresh_token = data['refresh_token']
 
         elif data['code'] == 'unauthorized.bad_refresh_token.evicted':
             print('refresh_token has been evicted by another login')
@@ -204,7 +210,6 @@ def exchange_authorization_code(authorization_code: str, redirect_uri: str) -> N
     if r.status_code != 200:
         raise Exception('Unexpected status code when exchanging oauth token')
 
-    monzo_user = MonzoUser.objects.all()[0]
-    monzo_user.access_token = data['access_token']
-    monzo_user.refresh_token = data['refresh_token']
-    monzo_user.save()
+    monzo_auth = MonzoAuth()
+    monzo_auth.access_token = data['access_token']
+    monzo_auth.refresh_token = data['refresh_token']
