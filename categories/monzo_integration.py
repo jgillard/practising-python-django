@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Dict, List
+from urllib.parse import urlencode, urlunsplit
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -7,6 +8,14 @@ from django.core.exceptions import PermissionDenied
 import requests
 
 from .models import TransactionData, MonzoUser
+from mysite.settings import MONZO_CLIENT_ID, MONZO_CLIENT_SECRET
+
+API_ROOT = 'https://api.monzo.com'
+AUTH_ROOT = 'https://auth.monzo.com'
+OAUTH_TOKEN_ENDPOINT = f'{API_ROOT}/oauth2/token'
+
+# Improving this is out-of-scope for now
+OAUTH_STATE_TOKEN = 'foobar'
 
 
 class MonzoException(Exception):
@@ -19,9 +28,7 @@ class NoAccessTokenException(MonzoException):
 
 
 class MonzoAuth:
-    API_ROOT = 'https://api.monzo.com'
     WHOAMI_ENDPOINT = f'{API_ROOT}/ping/whoami'
-    REFRESH_ENDPOINT = f'{API_ROOT}/oauth2/token'
 
     def __init__(self):
         # Read tokens saved in DB
@@ -73,7 +80,7 @@ class MonzoAuth:
             'client_secret': settings.MONZO_CLIENT_SECRET,
             'refresh_token': self._refresh_token,
         }
-        r = requests.post(self.REFRESH_ENDPOINT, data)
+        r = requests.post(OAUTH_TOKEN_ENDPOINT, data)
         data = r.json()
 
         if r.status_code == 200:
@@ -101,8 +108,6 @@ class MonzoAuth:
 
 
 class MonzoRequest:
-    # DRY
-    API_ROOT = 'https://api.monzo.com'
     TRANSACTIONS_ENDPOINT = f'{API_ROOT}/transactions'
 
     def __init__(self):
@@ -161,3 +166,45 @@ class MonzoRequest:
         week_uningested_ids = week_spend_ids.difference(all_ingested_ids)
         week_uningested_monzo_transactions = [t for t in spends if t['id'] in week_uningested_ids]
         return week_uningested_monzo_transactions
+
+
+def get_login_url(redirect_uri: str) -> str:
+    client_id = MONZO_CLIENT_ID
+    state_token = OAUTH_STATE_TOKEN
+
+    params = {
+        'client_id': client_id,
+        'redirect_uri': redirect_uri,
+        'response_type': 'code',
+        'state': state_token,
+    }
+
+    elements = ('https', 'auth.monzo.com', '', urlencode(params), '')
+    url = urlunsplit(elements)
+
+    return url
+
+
+def exchange_authorization_code(authorization_code: str, redirect_uri: str) -> None:
+    url = OAUTH_TOKEN_ENDPOINT
+    client_id = MONZO_CLIENT_ID
+    client_secret = MONZO_CLIENT_SECRET
+
+    data = {
+        'grant_type': 'authorization_code',
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'redirect_uri': redirect_uri,
+        'code': authorization_code,
+    }
+
+    r = requests.post(url, data)
+    data = r.json()
+
+    if r.status_code != 200:
+        raise Exception('Unexpected status code when exchanging oauth token')
+
+    monzo_user = MonzoUser.objects.all()[0]
+    monzo_user.access_token = data['access_token']
+    monzo_user.refresh_token = data['refresh_token']
+    monzo_user.save()
