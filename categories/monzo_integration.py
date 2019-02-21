@@ -3,7 +3,9 @@ from typing import Dict, List
 from urllib.parse import urlencode, urlunsplit
 
 from django.conf import settings
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import PermissionDenied
+from django.urls import reverse
 
 import requests
 
@@ -116,11 +118,13 @@ class MonzoAuth:
 
 class MonzoRequest:
     TRANSACTIONS_ENDPOINT = f'{API_ROOT}/transactions'
+    FEED_ENDPOINT = f'{API_ROOT}/feed'
 
     def __init__(self):
         # Catch user not in DB?
         monzo_user = MonzoUser.objects.all()[0]
-        self.params = {'account_id': monzo_user.account_id}
+        self.account_id = monzo_user.account_id
+        self.params = {'account_id': self.account_id}
         access_token = MonzoAuth().access_token
         # DRY
         self.headers = {'Authorization': f'Bearer {access_token}'}
@@ -187,20 +191,18 @@ class MonzoRequest:
         image_url = f'{request.get_host()}/{static("flying-money.gif")}'
 
         data = {
-            'account_id': self.monzo_user.account_id,
+            'account_id': self.account_id,
             'type': 'basic',
             'url': url,
             'params[title]': 'Django-Categories',
             'params[body]': 'Tap to categorise the spend you just made',
             'params[image_url]': image_url,
         }
+        
+        r = requests.post(self.FEED_ENDPOINT, data, headers=self.headers)
 
-        r = requests.post(self.feed_endpoint, data, headers=self.headers)
-
-        print(r.url)
-        print(r.text)
-
-        print(r)
+        if r.status_code != 200:
+            raise Exception('Unexpected status code when creating Monzo feed item')
 
 
 def get_login_url(redirect_uri: str) -> str:

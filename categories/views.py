@@ -307,10 +307,14 @@ def oauth_callback_view(request):
 
 ### Webhook Views ###
 
+# This is unauthenticated :-1:
+# There's no way of determining that the push came from Monzo currently
+# Source: https://github.com/monzo/docs/issues/50
 @csrf_exempt
 def webhook_monzo_view(request):
     data = json.loads(request.body)
-    assert (data['type'] == 'transaction.created')
+    if data['type'] != 'transaction.created':
+        raise Exception('Unexpected webhook data type')
 
     if data['data']['is_load'] is not True:
         MonzoRequest().create_feed_item(request)
