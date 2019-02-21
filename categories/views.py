@@ -120,7 +120,8 @@ class OptionCreateView(generic.edit.CreateView):
 
     def post(self, request, *args, **kwargs):
         if 'save-and-add-another' in request.POST:
-            self.success_url = reverse_lazy('option_new')
+            question_id = self.request.POST.get('question')
+            self.success_url = reverse_lazy('option_new') + f'?question={question_id}'
         return super().post(self, request, *args, **kwargs)
 
 
@@ -150,13 +151,6 @@ class TxidDetailView(generic.DetailView):
     model = TransactionData
     template_name = 'txid_detail.html'
     pk_url_kwarg = 'txid'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        td = context['object']
-        context['qs'] = Question.objects.filter(category=td.category)
-        context['qas'] = QuestionAnswer.objects.filter(txid=td)
-        return context
 
 
 def new_txid(request, txid=None):
@@ -202,12 +196,7 @@ class TxidDeleteView(generic.edit.DeleteView):
 ### Composite Views ###
 
 def index(request):
-    context = {
-        'category_list': Category.objects.all(),
-        'question_list': Question.objects.all(),
-        'option_list': Option.objects.all(),
-    }
-    return render(request, 'index.html', context)
+    return render(request, 'index.html')
 
 
 @login_required(login_url='/admin/')

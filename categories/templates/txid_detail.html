@@ -14,13 +14,13 @@
       <th scope="row">Assigned Category</th>
       <td>{{ object.category }}</td>
     </tr>
-    {% for q in qs %}
+    {% for q in object.applicable_questions %}
     <tr>
       <th scope="row">Category Question</th>
       <td>{{ q.title }} : {{ q.answer_type }}</td>
     </tr>
     {% endfor %}
-      {% for qa in qas %}
+      {% for qa in object.question_answers %}
     <tr>
       <th scope="row">QuestionAnswer</th>
         {% if qa.option_answer %}
