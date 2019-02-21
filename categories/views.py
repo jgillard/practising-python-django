@@ -353,7 +353,7 @@ def start_login_view(request):
     url = (
         f'https://auth.monzo.com/?client_id={client_id}&'
         f'redirect_uri={redirect_uri}&'
-        f'response_type= code&'
+        f'response_type=code&'
         f'state={state_token}'
     )
 
