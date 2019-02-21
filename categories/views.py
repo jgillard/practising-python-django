@@ -205,7 +205,7 @@ def latest_monzo_transaction(request):
         monzo = MonzoRequest()
     except NoAccessTokenException:
         request.session['final_redirect'] = reverse('latest_transaction')
-        return start_login_view(request)
+        return login_view(request)
 
     t0 = time.time()
     latest = monzo.get_latest_transaction()
@@ -223,12 +223,12 @@ def latest_monzo_transaction(request):
 
 
 @login_required(login_url='/admin')
-def week_list_view(request):
+def week_view(request):
     try:
         monzo = MonzoRequest()
     except NoAccessTokenException:
         request.session['final_redirect'] = reverse('week')
-        return start_login_view(request)
+        return login_view(request)
 
     t0 = time.time()
     spending = monzo.get_week_of_spends()
@@ -258,7 +258,7 @@ def analysis_view(request):
         monzo = MonzoRequest()
     except NoAccessTokenException:
         request.session['final_redirect'] = reverse('analysis')
-        return start_login_view(request)
+        return login_view(request)
 
     spending = monzo.get_week_of_spends()
 
@@ -309,7 +309,7 @@ def ingest_view(request):
         monzo = MonzoRequest()
     except NoAccessTokenException:
         request.session['final_redirect'] = reverse('ingest')
-        return start_login_view(request)
+        return login_view(request)
 
     transaction = monzo.get_latest_uningested_transaction()
     form_td = TransactionDataForm(initial={'txid': transaction['id']})
@@ -321,7 +321,7 @@ def ingest_view(request):
 ### Login Views ###
 
 @login_required(login_url='/admin/')
-def start_login_view(request):
+def login_view(request):
     redirect_uri = request.build_absolute_uri(reverse('oauth_callback'))
     login_url = get_login_url(redirect_uri)
     return redirect(login_url)

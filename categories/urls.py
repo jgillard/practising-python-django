@@ -23,17 +23,18 @@ urlpatterns = [
     path('options/<int:pk>/edit/', views.OptionUpdateView.as_view(), name='option_edit'),
     path('options/<int:pk>/delete/', views.OptionDeleteView.as_view(), name='option_delete'),
 
-    path('lt/', views.latest_monzo_transaction, name='latest_transaction'),
     path('txid/', views.TxidListView.as_view(), name='txid_list'),
     path('txid/new/', views.new_txid, name='txid_new'),
-    path('txid/<str:txid>/', views.TxidDetailView.as_view(), name='txid_detail'),
     path('txid/new/<str:txid>', views.new_txid, name='txid_new'),
+    path('txid/<str:txid>/', views.TxidDetailView.as_view(), name='txid_detail'),
     path('txid/<str:txid>/delete/', views.TxidDeleteView.as_view(), name='txid_delete'),
-    path('week/', views.week_list_view, name='week'),
+
+    path('lt/', views.latest_monzo_transaction, name='latest_transaction'),
+    path('week/', views.week_view, name='week'),
     path('analysis/', views.analysis_view, name='analysis_view'),
     path('ingest/', views.ingest_view, name='ingest_view'),
 
-    path('login/', views.start_login_view, name='start_login_view'),
+    path('login/', views.login_view, name='login_view'),
     path('oauth-callback/', views.oauth_callback_view, name='oauth_callback'),
 
     path('ajax/load-questions-for-category/', views.load_questions_for_category,
