@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
+from django.views.decorators.http import require_http_methods
 
 from collections import Counter
 import time
@@ -17,16 +18,19 @@ from .monzo_integration import MonzoRequest, NoAccessTokenException, get_login_u
 ### Category Views ###
 
 class CategoryListView(generic.ListView):
+    http_method_names = ['get']
     model = Category
     template_name = 'category_list.html'
 
 
 class CategoryDetailView(generic.DetailView):
+    http_method_names = ['get']
     model = Category
     template_name = 'category_detail.html'
 
 
 class CategoryCreateView(generic.edit.CreateView):
+    http_method_names = ['get', 'post']
     model = Category
     form_class = CategoryForm
     template_name = 'generic_new.html'
@@ -39,6 +43,7 @@ class CategoryCreateView(generic.edit.CreateView):
 
 
 class CategoryUpdateView(generic.edit.UpdateView):
+    http_method_names = ['get', 'post']
     model = Category
     form_class = CategoryForm
     template_name = 'generic_edit.html'
@@ -46,6 +51,7 @@ class CategoryUpdateView(generic.edit.UpdateView):
 
 
 class CategoryDeleteView(generic.edit.DeleteView):
+    http_method_names = ['get', 'post']
     # this currently throws an exception if there are child objects
     model = Category
     template_name = 'generic_delete.html'
@@ -56,16 +62,19 @@ class CategoryDeleteView(generic.edit.DeleteView):
 ### Question Views ###
 
 class QuestionListView(generic.ListView):
+    http_method_names = ['get']
     model = Question
     template_name = 'question_list.html'
 
 
 class QuestionDetailView(generic.DetailView):
+    http_method_names = ['get']
     model = Question
     template_name = 'question_detail.html'
 
 
 class QuestionCreateView(generic.edit.CreateView):
+    http_method_names = ['get', 'post']
     model = Question
     form_class = QuestionForm
     template_name = 'generic_new.html'
@@ -78,6 +87,7 @@ class QuestionCreateView(generic.edit.CreateView):
 
 
 class QuestionUpdateView(generic.edit.UpdateView):
+    http_method_names = ['get', 'post']
     model = Question
     form_class = QuestionForm
     template_name = 'generic_edit.html'
@@ -85,6 +95,7 @@ class QuestionUpdateView(generic.edit.UpdateView):
 
 
 class QuestionDeleteView(generic.edit.DeleteView):
+    http_method_names = ['get', 'post']
     # this currently allows deletion of questions with referencing options
     model = Question
     form_class = QuestionForm
@@ -96,16 +107,19 @@ class QuestionDeleteView(generic.edit.DeleteView):
 ### Option Views ###
 
 class OptionListView(generic.ListView):
+    http_method_names = ['get']
     model = Option
     template_name = 'option_list.html'
 
 
 class OptionDetailView(generic.DetailView):
+    http_method_names = ['get']
     model = Option
     template_name = 'option_detail.html'
 
 
 class OptionCreateView(generic.edit.CreateView):
+    http_method_names = ['get', 'post']
     model = Option
     form_class = OptionForm
     template_name = 'generic_new.html'
@@ -126,6 +140,7 @@ class OptionCreateView(generic.edit.CreateView):
 
 
 class OptionUpdateView(generic.edit.UpdateView):
+    http_method_names = ['get', 'post']
     model = Option
     form_class = OptionForm
     template_name = 'generic_edit.html'
@@ -133,6 +148,7 @@ class OptionUpdateView(generic.edit.UpdateView):
 
 
 class OptionDeleteView(generic.edit.DeleteView):
+    http_method_names = ['get', 'post']
     model = Option
     form_class = OptionForm
     template_name = 'generic_delete.html'
@@ -143,16 +159,19 @@ class OptionDeleteView(generic.edit.DeleteView):
 ### Transaction Views ###
 
 class TxidListView(generic.ListView):
+    http_method_names = ['get']
     model = TransactionData
     template_name = 'txid_list.html'
 
 
 class TxidDetailView(generic.DetailView):
+    http_method_names = ['get']
     model = TransactionData
     template_name = 'txid_detail.html'
     pk_url_kwarg = 'txid'
 
 
+@require_http_methods(['GET', 'POST'])
 def new_txid(request, txid=None):
     # instructions for adding a formset: https://stackoverflow.com/a/28059352
     # requires for additional/configurable number of QAs
@@ -169,6 +188,7 @@ def new_txid(request, txid=None):
 
 
 class TxidDeleteView(generic.edit.DeleteView):
+    http_method_names = ['get', 'post']
     model = TransactionData
     template_name = 'generic_delete.html'
     extra_context = {'class_name': 'txid', 'footer': 'foobles'}
@@ -189,11 +209,13 @@ class TxidDeleteView(generic.edit.DeleteView):
 
 ### Composite Views ###
 
+@require_http_methods(['GET'])
 def index(request):
     return render(request, 'index.html')
 
 
 @login_required(login_url='/admin/')
+@require_http_methods(['GET'])
 def latest_monzo_transaction(request):
     try:
         monzo = MonzoRequest()
@@ -217,6 +239,7 @@ def latest_monzo_transaction(request):
 
 
 @login_required(login_url='/admin')
+@require_http_methods(['GET'])
 def week_view(request):
     try:
         monzo = MonzoRequest()
@@ -247,6 +270,7 @@ def week_view(request):
 
 
 @login_required(login_url='/admin')
+@require_http_methods(['GET'])
 def analysis_view(request):
     try:
         monzo = MonzoRequest()
@@ -295,6 +319,7 @@ def analysis_view(request):
 
 
 @login_required(login_url='/admin/')
+@require_http_methods(['GET', 'POST'])
 def ingest_view(request):
     if request.method == 'POST':
         return process_txid_post(request)
@@ -315,6 +340,7 @@ def ingest_view(request):
 ### Login Views ###
 
 @login_required(login_url='/admin/')
+@require_http_methods(['GET'])
 def login_view(request):
     redirect_uri = request.build_absolute_uri(reverse('oauth_callback'))
     login_url = get_login_url(redirect_uri)
@@ -322,6 +348,7 @@ def login_view(request):
 
 
 @login_required(login_url='/admin/')
+@require_http_methods(['GET'])
 def oauth_callback_view(request):
     state = request.GET.get('state')
     # Improving this is out-of-scope for now
@@ -336,6 +363,7 @@ def oauth_callback_view(request):
 
 ### AJAX Views ###
 
+@require_http_methods(['GET'])
 def load_questions_for_category(request):
     # Also returns questions from a parent category
     category_id = request.GET.get('category')
@@ -344,6 +372,7 @@ def load_questions_for_category(request):
     return render(request, 'components/question_dropdown_list.html', {'questions': questions})
 
 
+@require_http_methods(['GET'])
 def load_options_for_question(request):
     question_id = request.GET.get('question')
     question = Question.objects.get(pk__exact=question_id)
@@ -355,6 +384,7 @@ def load_options_for_question(request):
 
 ### Shared Logic ###
 
+@require_http_methods(['GET', 'POST'])
 def process_txid_post(request):
     form_td = TransactionDataForm(request.POST)
     form_qa = QuestionAnswerForm(request.POST)
