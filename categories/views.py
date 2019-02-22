@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
@@ -209,113 +210,141 @@ class TxidDeleteView(generic.edit.DeleteView):
 
 ### Composite Views ###
 
-@require_http_methods(['GET'])
-def index(request):
-    return render(request, 'index.html')
+class IndexView(generic.TemplateView):
+    http_method_names = ['get']
+    template_name = 'index.html'
 
 
-@login_required(login_url='/admin/')
-@require_http_methods(['GET'])
-def latest_monzo_transaction(request):
-    try:
+class LatestTransactionView(LoginRequiredMixin, generic.TemplateView):
+    http_method_names = ['get']
+    template_name = 'latest_transaction.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            MonzoRequest()
+        except NoAccessTokenException:
+            self.request.session['final_redirect'] = reverse('latest_transaction')
+            return redirect('login_view')
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        t0 = time.time()
         monzo = MonzoRequest()
-    except NoAccessTokenException:
-        request.session['final_redirect'] = reverse('latest_transaction')
-        return login_view(request)
+        latest = monzo.get_latest_transaction()
+        req_secs = time.time() - t0
 
-    t0 = time.time()
-    latest = monzo.get_latest_transaction()
-    req_secs = time.time() - t0
+        context['data'] = latest
+        context['req_1_secs'] = req_secs
+        try:
+            context['td'] = TransactionData.objects.get(pk=latest['id'])
+            context['qs'] = Question.objects.filter(category=context['td'].category)
+            context['qas'] = QuestionAnswer.objects.filter(txid=latest['id'])
+        except TransactionData.DoesNotExist:
+            pass
 
-    context = {'data': latest, 'reqs1secs': req_secs}
-    try:
-        context['td'] = TransactionData.objects.get(pk=latest['id'])
-        context['qs'] = Question.objects.filter(category=context['td'].category)
-        context['qas'] = QuestionAnswer.objects.filter(txid=latest['id'])
-    except TransactionData.DoesNotExist:
-        pass
-
-    return render(request, 'latest_transaction.html', context)
+        return context
 
 
-@login_required(login_url='/admin')
-@require_http_methods(['GET'])
-def week_view(request):
-    try:
+class WeekView(LoginRequiredMixin, generic.TemplateView):
+    http_method_names = ['get']
+    template_name = 'week.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            MonzoRequest()
+        except NoAccessTokenException:
+            self.request.session['final_redirect'] = reverse('week')
+            return redirect('login_view')
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        t0 = time.time()
         monzo = MonzoRequest()
-    except NoAccessTokenException:
-        request.session['final_redirect'] = reverse('week')
-        return login_view(request)
+        spending = monzo.get_week_of_spends()
+        req_1_secs = time.time() - t0
 
-    t0 = time.time()
-    spending = monzo.get_week_of_spends()
-    req_1_secs = time.time() - t0
+        ids = [t['id'] for t in spending]
+        # get any TD objects with a matching ID
+        tds = list(TransactionData.objects.filter(pk__in=ids))
 
-    ids = [t['id'] for t in spending]
-    # get any TD objects with a matching ID
-    tds = list(TransactionData.objects.filter(pk__in=ids))
+        # Attach TransactionData object to monzo spends if it exists
+        for spend in spending:
+            spend['td_obj'] = None
+            for td in tds:
+                if td.txid == spend['id']:
+                    spend['td_obj'] = td
 
-    # Attach TransactionData object to monzo spends if it exists
-    for spend in spending:
-        spend['td_obj'] = None
-        for td in tds:
-            if td.txid == spend['id']:
-                spend['td_obj'] = td
+        # Put the latest transactions at the front of the list
+        spending = spending[::-1]
 
-    # Put the latest transactions at the front of the list
-    spending = spending[::-1]
+        context['object_list'] = spending
+        context['reqs1secs'] = req_1_secs
 
-    context = {'object_list': spending, 'reqs1secs': req_1_secs}
-    return render(request, 'week.html', context)
+        return context
 
 
-@login_required(login_url='/admin')
-@require_http_methods(['GET'])
-def analysis_view(request):
-    try:
+class AnalysisView(LoginRequiredMixin, generic.TemplateView):
+    http_method_names = ['get']
+    template_name = 'analysis.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            MonzoRequest()
+        except NoAccessTokenException:
+            self.request.session['final_redirect'] = reverse('analysis_view')
+            return redirect('login_view')
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
         monzo = MonzoRequest()
-    except NoAccessTokenException:
-        request.session['final_redirect'] = reverse('analysis')
-        return login_view(request)
+        spending = monzo.get_week_of_spends()
 
-    spending = monzo.get_week_of_spends()
+        ############################### sums
+        spending_sum_pennies = abs(sum([t['amount'] for t in spending]))
 
-    ############################### sums
-    spending_sum_pennies = abs(sum([t['amount'] for t in spending]))
+        ingested_spends = monzo.get_week_of_ingested_spends()
 
-    ingested_spends = monzo.get_week_of_ingested_spends()
+        ingested_sum_pennies = abs(sum([t['amount'] for t in ingested_spends]))
 
-    ingested_sum_pennies = abs(sum([t['amount'] for t in ingested_spends]))
+        diff = spending_sum_pennies - ingested_sum_pennies
 
-    diff = spending_sum_pennies - ingested_sum_pennies
+        uningested_transactions = monzo.get_week_of_uningested_spends()
+        uningested_sum_pennies = abs(sum([t['amount'] for t in uningested_transactions]))
 
-    uningested_transactions = monzo.get_week_of_uningested_spends()
-    uningested_sum_pennies = abs(sum([t['amount'] for t in uningested_transactions]))
+        ############################# some category stuff
+        ingested_transactions_monzo = monzo.get_week_of_ingested_spends()
+        ingested_transaction_ids = [t['id'] for t in ingested_transactions_monzo]
+        ingested_transactions_td = list(TransactionData.objects.filter(pk__in=ingested_transaction_ids))
 
-    ############################# some category stuff
-    ingested_transactions_monzo = monzo.get_week_of_ingested_spends()
-    ingested_transaction_ids = [t['id'] for t in ingested_transactions_monzo]
-    ingested_transactions_td = list(TransactionData.objects.filter(pk__in=ingested_transaction_ids))
+        summary = Counter()
+        for td in ingested_transactions_td:
+            # Get top-level category for each transaction
+            category = td.category.parent if td.category.parent else td.category
+            monzo_transaction = [t for t in ingested_transactions_monzo if t['id'] == td.txid][0]
+            # spend amounts are always negative
+            summary[category.name] -= monzo_transaction['amount']
 
-    summary = Counter()
-    for td in ingested_transactions_td:
-        # Get top-level category for each transaction
-        category = td.category.parent if td.category.parent else td.category
-        monzo_transaction = [t for t in ingested_transactions_monzo if t['id'] == td.txid][0]
-        # spend amounts are always negative
-        summary[category.name] -= monzo_transaction['amount']
+        context_add = {
+            'total_transactions_count': len(spending),
+            'spending_sum_pennies': spending_sum_pennies,
+            'ingested_sum_pennies': ingested_sum_pennies,
+            'count_ingested': len(ingested_spends),
+            'diff': diff,
+            'uningested_sum_pennies': uningested_sum_pennies,
+            'count_uningested': len(uningested_transactions),
+            'summary': summary,
+        }
 
-    context = {
-        'total_transactions_count': len(spending),
-        'spending_sum_pennies': spending_sum_pennies,
-        'ingested_sum_pennies': ingested_sum_pennies,
-        'count_ingested': len(ingested_spends),
-        'diff': diff,
-        'uningested_sum_pennies': uningested_sum_pennies,
-        'count_uningested': len(uningested_transactions),
-        'summary': summary,
-    }
-    return render(request, 'analysis.html', context)
+        return {**context, **context_add}
 
 
 @login_required(login_url='/admin/')
@@ -363,23 +392,36 @@ def oauth_callback_view(request):
 
 ### AJAX Views ###
 
-@require_http_methods(['GET'])
-def load_questions_for_category(request):
-    # Also returns questions from a parent category
-    category_id = request.GET.get('category')
-    category = Category.objects.get(pk=category_id)
-    questions = category.questions
-    return render(request, 'components/question_dropdown_list.html', {'questions': questions})
+class LoadQuestionsForCategoryView(generic.TemplateView):
+    http_method_names = ['get']
+    template_name = 'components/question_dropdown_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        category_id = self.request.GET.get('category')
+        category = Category.objects.get(pk=category_id)
+        questions = category.questions
+        context['questions'] = questions
+
+        return context
 
 
-@require_http_methods(['GET'])
-def load_options_for_question(request):
-    question_id = request.GET.get('question')
-    question = Question.objects.get(pk__exact=question_id)
-    if question.answer_type == 'N':
-        return HttpResponse(status=204)
-    options = question.options
-    return render(request, 'components/option_dropdown_list.html', {'options': options})
+class LoadOptionsForQuestionView(generic.TemplateView):
+    http_method_names = ['get']
+    template_name = 'components/option_dropdown_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        question_id = self.request.GET.get('question')
+        question = Question.objects.get(pk__exact=question_id)
+        if question.answer_type == 'N':
+            return HttpResponse(status=204)
+        options = question.options
+        context['options'] = options
+
+        return context
 
 
 ### Shared Logic ###

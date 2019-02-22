@@ -8,7 +8,7 @@ class TestUrls(SimpleTestCase):
 
     def test_resolves_index(self):
         url = reverse('index')
-        self.assertEquals(resolve(url).func, views.index)
+        self.assertEquals(resolve(url).func.view_class, views.IndexView)
 
     def test_resolves_category_list(self):
         url = reverse('category_list')
@@ -97,15 +97,15 @@ class TestUrls(SimpleTestCase):
 
     def test_resolves_latest_transaction(self):
         url = reverse('latest_transaction')
-        self.assertEquals(resolve(url).func, views.latest_monzo_transaction)
+        self.assertEquals(resolve(url).func.view_class, views.LatestTransactionView)
 
     def test_resolves_week(self):
         url = reverse('week')
-        self.assertEquals(resolve(url).func, views.week_view)
+        self.assertEquals(resolve(url).func.view_class, views.WeekView)
 
     def test_resolves_analysis_view(self):
         url = reverse('analysis_view')
-        self.assertEquals(resolve(url).func, views.analysis_view)
+        self.assertEquals(resolve(url).func.view_class, views.AnalysisView)
 
     def test_resolves_ingest_view(self):
         url = reverse('ingest_view')
@@ -121,8 +121,8 @@ class TestUrls(SimpleTestCase):
 
     def test_resolves_ajax_load_questions_for_category(self):
         url = reverse('ajax_load_questions_for_category')
-        self.assertEquals(resolve(url).func, views.load_questions_for_category)
+        self.assertEquals(resolve(url).func.view_class, views.LoadQuestionsForCategoryView)
 
     def test_resolves_ajax_load_options_for_question(self):
         url = reverse('ajax_load_options_for_question')
-        self.assertEquals(resolve(url).func, views.load_options_for_question)
+        self.assertEquals(resolve(url).func.view_class, views.LoadOptionsForQuestionView)

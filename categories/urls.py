@@ -3,7 +3,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.IndexView.as_view(), name='index'),
 
     path('categories/', views.CategoryListView.as_view(), name='category_list'),
     path('categories/<int:pk>/', views.CategoryDetailView.as_view(), name='category_detail'),
@@ -29,17 +29,17 @@ urlpatterns = [
     path('txid/<str:txid>/', views.TxidDetailView.as_view(), name='txid_detail'),
     path('txid/<str:txid>/delete/', views.TxidDeleteView.as_view(), name='txid_delete'),
 
-    path('lt/', views.latest_monzo_transaction, name='latest_transaction'),
-    path('week/', views.week_view, name='week'),
-    path('analysis/', views.analysis_view, name='analysis_view'),
+    path('lt/', views.LatestTransactionView.as_view(), name='latest_transaction'),
+    path('week/', views.WeekView.as_view(), name='week'),
+    path('analysis/', views.AnalysisView.as_view(), name='analysis_view'),
     path('ingest/', views.ingest_view, name='ingest_view'),
 
     path('login/', views.login_view, name='login_view'),
     path('oauth-callback/', views.oauth_callback_view, name='oauth_callback'),
 
-    path('ajax/load-questions-for-category/', views.load_questions_for_category,
+    path('ajax/load-questions-for-category/', views.LoadQuestionsForCategoryView.as_view(),
          name='ajax_load_questions_for_category'),
-    path('ajax/load-options-for-question/', views.load_options_for_question,
+    path('ajax/load-options-for-question/', views.LoadOptionsForQuestionView.as_view(),
          name='ajax_load_options_for_question'),
 
 ]

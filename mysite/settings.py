@@ -140,3 +140,5 @@ MONZO_CLIENT_ID = config.get('monzo', 'client_id') \
 MONZO_CLIENT_SECRET = config.get('monzo', 'client_secret') \
     if config.has_option('monzo', 'client_secret') \
     else os.environ.get('MONZO_CLIENT_SECRET')
+
+LOGIN_URL = '/admin/'
