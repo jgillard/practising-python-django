@@ -327,7 +327,7 @@ def ingest_view(request):
     try:
         monzo = MonzoRequest()
     except NoAccessTokenException:
-        request.session['final_redirect'] = reverse('ingest')
+        request.session['final_redirect'] = reverse('ingest_view')
         return login_view(request)
 
     transaction = monzo.get_latest_uningested_transaction()
