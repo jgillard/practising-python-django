@@ -67,6 +67,16 @@ class TestQuestionModel(TestCase):
             answer_type='S'
         )
 
+        self.option = models.Option.objects.create(
+            title='option title',
+            question=self.question
+        )
+
+    def test_question_get_options(self):
+        got = self.question.options
+        want = self.option
+        self.assertEquals(list(got)[0], want)
+
     def test_question_get_hierarchical_name(self):
         got = self.question.get_hierarchical_name()
         want = f'{self.category} -> {self.question}'
@@ -107,6 +117,12 @@ class TestTransactionData(TestCase):
             option_answer=self.option,
             number_answer=None
         )
+
+    def test_delete(self):
+        # Test that dependent qas are deleted too
+        self.td.delete()
+        self.assertRaises(models.QuestionAnswer.DoesNotExist, models.QuestionAnswer.objects.get, pk=self.td.pk)
+        self.assertRaises(models.TransactionData.DoesNotExist, models.TransactionData.objects.get, pk=self.td.pk)
 
     def test_transactiondata_get_applicable_questions(self):
         got = self.td.category.questions[0]

@@ -186,12 +186,6 @@ class TxidDeleteView(generic.edit.DeleteView):
 
         return context
 
-    def delete(self, request, *args, **kwargs):
-        # delete the dependant QAs first
-        qas = QuestionAnswer.objects.filter(txid__exact=kwargs['txid'])
-        qas.delete()
-        return super().delete(request, *args, **kwargs)
-
 
 ### Composite Views ###
 
@@ -346,8 +340,7 @@ def load_questions_for_category(request):
     # Also returns questions from a parent category
     category_id = request.GET.get('category')
     category = Category.objects.get(pk=category_id)
-    parent_id = category.parent.pk
-    questions = Question.objects.filter(category__in=[category_id, parent_id])
+    questions = category.questions
     return render(request, 'components/question_dropdown_list.html', {'questions': questions})
 
 
@@ -356,7 +349,7 @@ def load_options_for_question(request):
     question = Question.objects.get(pk__exact=question_id)
     if question.answer_type == 'N':
         return HttpResponse(status=204)
-    options = Option.objects.filter(question=question_id)
+    options = question.options
     return render(request, 'components/option_dropdown_list.html', {'options': options})
 
 

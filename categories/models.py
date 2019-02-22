@@ -73,6 +73,10 @@ class Question(models.Model):
     def get_absolute_url(self):
         return f'/questions/{self.pk}'
 
+    @property
+    def options(self):
+        return self.option_set.all()
+
     def get_hierarchical_name(self):
         return f'{self.category.name} -> {self.title}'
 
@@ -117,6 +121,12 @@ class TransactionData(models.Model):
 
     def __str__(self):
         return self.txid
+
+    def delete(self, *args, **kwargs):
+        # delete dependent QuestionAnswers first
+        for qa in self.question_answers:
+            qa.delete()
+        super().delete(*args, **kwargs)
 
     @property
     def applicable_questions(self):
