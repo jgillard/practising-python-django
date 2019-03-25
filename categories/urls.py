@@ -52,6 +52,11 @@ urlpatterns = [
     path('options/<int:pk>/delete/',
          views.OptionDeleteView.as_view(), name='option_delete'),
 
+    path('api/options/',
+         views.OptionListDrf.as_view(), name='option-list'),
+    path('api/options/<int:pk>/',
+         views.OptionDetailDrf.as_view(), name='option-detail'),
+
     path('td/',
          views.TdListView.as_view(), name='td_list'),
     path('td/new/',
