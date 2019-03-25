@@ -39,8 +39,8 @@ class CategoryListView(generic.ListView):
     template_name = 'category_list.html'
 
 
-class CategoryListDrf(generics.ListAPIView):
-    queryset = Category.objects.all()
+class CategoryListDrf(generics.ListCreateAPIView):
+    queryset = Category.objects.all().order_by('-id')
     serializer_class = CategorySerializer
 
 
@@ -50,7 +50,7 @@ class CategoryDetailView(generic.DetailView):
     template_name = 'category_detail.html'
 
 
-class CategoryDetailDrf(generics.RetrieveAPIView):
+class CategoryDetailDrf(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
