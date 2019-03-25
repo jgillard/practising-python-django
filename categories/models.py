@@ -104,7 +104,7 @@ class Option(models.Model):
 
 
 class TransactionData(models.Model):
-    txid = models.CharField(
+    id = models.CharField(
         primary_key=True,
         max_length=30,
     )
@@ -120,7 +120,7 @@ class TransactionData(models.Model):
         verbose_name_plural = 'TransactionData'
 
     def __str__(self):
-        return self.txid
+        return self.id
 
     def delete(self, *args, **kwargs):
         # delete dependent QuestionAnswers first
