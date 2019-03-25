@@ -1,4 +1,5 @@
 from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
 
@@ -70,3 +71,5 @@ urlpatterns = [
          views.LoadOptionsForQuestionView.as_view(), name='ajax_load_options_for_question'),
 
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
