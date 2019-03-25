@@ -16,7 +16,7 @@ import time
 
 from .forms import CategoryForm, QuestionForm, OptionForm, TransactionDataForm, QuestionAnswerForm
 from .models import Category, Question, Option, TransactionData, QuestionAnswer
-from .serializers import CategorySerializer
+from .serializers import CategorySerializer, QuestionSerializer
 
 from .monzo_integration import MonzoRequest, NoAccessTokenException, get_login_url, exchange_authorization_code, \
     OAUTH_STATE_TOKEN
@@ -28,6 +28,7 @@ from .monzo_integration import MonzoRequest, NoAccessTokenException, get_login_u
 def api_root(request, format=None):
     return Response({
         'categories': reverse('category-list', request=request, format=format),
+        'questions': reverse('question-list', request=request, format=format),
     })
 
 
@@ -93,10 +94,20 @@ class QuestionListView(generic.ListView):
     template_name = 'question_list.html'
 
 
+class QuestionListDrf(generics.ListCreateAPIView):
+    queryset = Question.objects.all().order_by('-id')
+    serializer_class = QuestionSerializer
+
+
 class QuestionDetailView(generic.DetailView):
     http_method_names = ['get']
     model = Question
     template_name = 'question_detail.html'
+
+
+class QuestionDetailDrf(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
 
 
 class QuestionCreateView(generic.edit.CreateView):

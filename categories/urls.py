@@ -36,6 +36,11 @@ urlpatterns = [
     path('questions/<int:pk>/delete/',
          views.QuestionDeleteView.as_view(), name='question_delete'),
 
+    path('api/questions/',
+         views.QuestionListDrf.as_view(), name='question-list'),
+    path('api/questions/<int:pk>/',
+         views.QuestionDetailDrf.as_view(), name='question-detail'),
+
     path('options/',
          views.OptionListView.as_view(), name='option_list'),
     path('options/<int:pk>/',
