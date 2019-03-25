@@ -16,7 +16,7 @@ import time
 
 from .forms import CategoryForm, QuestionForm, OptionForm, TransactionDataForm, QuestionAnswerForm
 from .models import Category, Question, Option, TransactionData, QuestionAnswer
-from .serializers import CategorySerializer, QuestionSerializer
+from .serializers import CategorySerializer, OptionSerializer, QuestionSerializer
 
 from .monzo_integration import MonzoRequest, NoAccessTokenException, get_login_url, exchange_authorization_code, \
     OAUTH_STATE_TOKEN
@@ -29,6 +29,7 @@ def api_root(request, format=None):
     return Response({
         'categories': reverse('category-list', request=request, format=format),
         'questions': reverse('question-list', request=request, format=format),
+        'options': reverse('option-list', request=request, format=format),
     })
 
 
@@ -149,10 +150,20 @@ class OptionListView(generic.ListView):
     template_name = 'option_list.html'
 
 
+class OptionListDrf(generics.ListCreateAPIView):
+    queryset = Option.objects.all().order_by('-id')
+    serializer_class = OptionSerializer
+
+
 class OptionDetailView(generic.DetailView):
     http_method_names = ['get']
     model = Option
     template_name = 'option_detail.html'
+
+
+class OptionDetailDrf(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Option.objects.all()
+    serializer_class = OptionSerializer
 
 
 class OptionCreateView(generic.edit.CreateView):
