@@ -6,14 +6,29 @@ from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.decorators.http import require_http_methods
 
+from rest_framework import generics
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+
 from collections import Counter
 import time
 
 from .forms import CategoryForm, QuestionForm, OptionForm, TransactionDataForm, QuestionAnswerForm
 from .models import Category, Question, Option, TransactionData, QuestionAnswer
+from .serializers import CategorySerializer
 
 from .monzo_integration import MonzoRequest, NoAccessTokenException, get_login_url, exchange_authorization_code, \
     OAUTH_STATE_TOKEN
+
+### API Root ###
+
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response({
+        'categories': reverse('category-list', request=request, format=format),
+    })
 
 
 ### Category Views ###
@@ -24,10 +39,20 @@ class CategoryListView(generic.ListView):
     template_name = 'category_list.html'
 
 
+class CategoryListDrf(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
 class CategoryDetailView(generic.DetailView):
     http_method_names = ['get']
     model = Category
     template_name = 'category_detail.html'
+
+
+class CategoryDetailDrf(generics.RetrieveAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 
 class CategoryCreateView(generic.edit.CreateView):
