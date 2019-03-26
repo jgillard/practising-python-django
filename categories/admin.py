@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Question, Option, TransactionData, QuestionAnswer, MonzoUser
+from .models import *
 
 
 class CategoryAdmin(admin.ModelAdmin):

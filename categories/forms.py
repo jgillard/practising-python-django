@@ -3,7 +3,7 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Category, Question, Option, TransactionData, QuestionAnswer
+from .models import *
 
 logger = logging.getLogger(__name__)
 

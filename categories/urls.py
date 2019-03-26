@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from . import views
+from . import views, views_experimental
 
 router = DefaultRouter()
 router.register(r'categories', views.CategoryDrfViewSet)
@@ -63,13 +63,13 @@ urlpatterns = [
          views.TdDeleteView.as_view(), name='td_delete'),
 
     path('lt/',
-         views.LatestTransactionView.as_view(), name='latest_transaction'),
+         views_experimental.LatestTransactionView.as_view(), name='latest_transaction'),
     path('week/',
-         views.WeekView.as_view(), name='week'),
+         views_experimental.WeekView.as_view(), name='week'),
     path('analysis/',
-         views.AnalysisView.as_view(), name='analysis_view'),
+         views_experimental.AnalysisView.as_view(), name='analysis_view'),
     path('ingest/',
-         views.ingest_view, name='ingest_view'),
+         views_experimental.ingest_view, name='ingest_view'),
 
     path('login/',
          views.login_view, name='login_view'),

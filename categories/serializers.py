@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Category, Option, Question, QuestionAnswer, TransactionData
+from .models import *
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
