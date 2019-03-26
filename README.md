@@ -8,7 +8,7 @@ I intend to cover Django with a Postgres backend, Django Rest Framework, and may
 
 ## Installation
 
-This has been developed with Python 3.7.2, and is currently using Django 2.1.5.
+This has been developed with Python 3.7.2, and is currently using Django 2.1.7.
 
 ```
 python3 -m venv .venv
@@ -31,6 +31,14 @@ All setup has not been automated yet. This includes:
 ## Tests
 
 `./manage.py test`
+
+## Docker 
+
+```
+docker build -t django-categories .
+docker-compose run web /code/manage.py migrate
+docker-compose up
+```
 
 
 ## Deployment
