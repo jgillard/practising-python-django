@@ -160,40 +160,40 @@ class OptionDeleteView(generic.edit.DeleteView):
 
 ### Transaction Views ###
 
-class TxidListView(generic.ListView):
+class TdListView(generic.ListView):
     http_method_names = ['get']
     model = TransactionData
-    template_name = 'txid_list.html'
+    template_name = 'td_list.html'
 
 
-class TxidDetailView(generic.DetailView):
+class TdDetailView(generic.DetailView):
     http_method_names = ['get']
     model = TransactionData
-    template_name = 'txid_detail.html'
+    template_name = 'td_detail.html'
 
 
 @require_http_methods(['GET', 'POST'])
-def new_txid(request, pk=None):
+def new_td(request, pk=None):
     # instructions for adding a formset: https://stackoverflow.com/a/28059352
     # requires for additional/configurable number of QAs
 
     if request.method == 'POST':
-        return process_txid_post(request)
+        return process_td_post(request)
     else:
         prefill_data = {'id': pk}
         form_td = TransactionDataForm(initial=prefill_data)
         form_qa = QuestionAnswerForm()
 
         context = {'form_td': form_td, 'form_qa': form_qa}
-        return render(request, 'txid_new.html', context=context)
+        return render(request, 'td_new.html', context=context)
 
 
-class TxidDeleteView(generic.edit.DeleteView):
+class TdDeleteView(generic.edit.DeleteView):
     http_method_names = ['get', 'post']
     model = TransactionData
     template_name = 'generic_delete.html'
-    extra_context = {'class_name': 'txid', 'footer': 'foobles'}
-    success_url = reverse_lazy('txid_list')
+    extra_context = {'class_name': 'td', 'footer': 'foobles'}
+    success_url = reverse_lazy('td_list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -356,7 +356,7 @@ class AnalysisView(LoginRequiredMixin, generic.TemplateView):
 @require_http_methods(['GET', 'POST'])
 def ingest_view(request):
     if request.method == 'POST':
-        return process_txid_post(request)
+        return process_td_post(request)
 
     try:
         monzo = MonzoRequest()
@@ -432,7 +432,7 @@ class LoadOptionsForQuestionView(generic.TemplateView):
 ### Shared Logic ###
 
 @require_http_methods(['GET', 'POST'])
-def process_txid_post(request):
+def process_td_post(request):
     form_td = TransactionDataForm(request.POST)
     form_qa = QuestionAnswerForm(request.POST)
     if all([form_td.is_valid(), form_qa.is_valid()]):
@@ -443,4 +443,4 @@ def process_txid_post(request):
                 qa = form_qa.save(commit=False)
                 qa.td = td
                 qa.save()
-        return redirect('txid_detail', pk=td.id)
+        return redirect('td_detail', pk=td.id)
