@@ -8,7 +8,7 @@
 {% include 'components/question_display.html' %}
 
 {% if question.answer_type == 'S' %}
-<a class="btn btn-primary" href="{% url 'option_new' %}?question={{ question.pk }}">Add an Option</a>
+  <a class="btn btn-primary" href="{% url 'option_new' %}?question={{ question.pk }}">Add an Option</a>
 {% endif %}
 <a class="btn btn-dark" href="{% url 'question_edit' question.pk %}">Edit Question</a>
 <a class="btn btn-danger" href="{% url 'question_delete' question.pk %}">Delete Question</a>

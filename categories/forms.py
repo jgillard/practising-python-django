@@ -50,9 +50,11 @@ class QuestionForm(forms.ModelForm):
 
         # prevent changing form type to number if options referencing the question exist
         if form_answer_type == 'N':
-            question_options_count = Option.objects.filter(question__exact=question_id).count()
+            question_options_count = Option.objects.filter(
+                question__exact=question_id).count()
             if question_options_count > 0:
-                raise ValidationError('Changing answer_type to number cannot occur if there are options referencing it')
+                raise ValidationError(
+                    'Changing answer_type to number cannot occur if there are options referencing it')
 
         return cleaned_data
 

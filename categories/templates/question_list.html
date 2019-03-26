@@ -10,11 +10,11 @@
 
 <ul>
   {% for question in object_list %}
-  <li>
-    <a href="{% url 'question_detail' question.id %}">
-      {% include 'components/question_display.html' %}
-    </a>
-  </li>
+    <li>
+      <a href="{% url 'question_detail' question.id %}">
+        {% include 'components/question_display.html' %}
+      </a>
+    </li>
   {% endfor %}
 </ul>
 

@@ -10,11 +10,11 @@
 
 <ul>
   {% for option in object_list %}
-  <li>
-    <a href="{% url 'option_detail' option.id %}">
-      {% include 'components/option_display.html' %}
-    </a>
-  </li>
+    <li>
+      <a href="{% url 'option_detail' option.id %}">
+        {% include 'components/option_display.html' %}
+      </a>
+    </li>
   {% endfor %}
 </ul>
 
