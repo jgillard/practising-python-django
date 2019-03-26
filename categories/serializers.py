@@ -31,13 +31,13 @@ class TransactionDataSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='td-detail')
     applicable_questions = serializers.HyperlinkedRelatedField(
         many=True, read_only=True, view_name='question-detail')
-    # question_answers = serializers.HyperlinkedRelatedField(
-    #     many=True, read_only=True, view_name='questionanswer-detail')
+    question_answers = serializers.PrimaryKeyRelatedField(
+        many=True, read_only=True)
 
     class Meta:
         model = TransactionData
-        fields = ('id', 'url', 'category', 'applicable_questions')
-        # fields = ('id', 'url', 'category', 'applicable_questions', 'question_answers')
+        fields = ('id', 'url', 'category',
+                  'applicable_questions', 'question_answers')
 
 
 class QuestionAnswerSerializer(serializers.HyperlinkedModelSerializer):
