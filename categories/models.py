@@ -37,11 +37,15 @@ class Category(models.Model):
 
     @property
     def questions(self):
-        category_questions = self.question_set.all()
-        parent_category_questions = Question.objects.none()
+        category_question_ids = self.question_set.all().values_list('id', flat=True)
+        parent_category_question_ids = Question.objects.none()
         if self.parent:
-            parent_category_questions = self.parent.question_set.all()
-        return category_questions.union(parent_category_questions)
+            parent_category_question_ids = self.parent.question_set.all().values_list('id',
+                                                                                      flat=True)
+        question_set = category_question_ids.union(
+            parent_category_question_ids)
+        queryset = Question.objects.filter(pk__in=question_set)
+        return queryset
 
 
 class Question(models.Model):

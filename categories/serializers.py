@@ -4,15 +4,21 @@ from .models import Category, Option, Question, QuestionAnswer, TransactionData
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
+    questions = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name='question-detail')
+
     class Meta:
         model = Category
-        fields = ('id', 'url', 'name', 'parent')
+        fields = ('id', 'url', 'name', 'parent', 'questions')
 
 
 class QuestionSerializer(serializers.HyperlinkedModelSerializer):
+    options = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name='option-detail')
+
     class Meta:
         model = Question
-        fields = ('id', 'url', 'title', 'category', 'answer_type')
+        fields = ('id', 'url', 'title', 'category', 'answer_type', 'options')
 
 
 class OptionSerializer(serializers.HyperlinkedModelSerializer):
@@ -23,10 +29,15 @@ class OptionSerializer(serializers.HyperlinkedModelSerializer):
 
 class TransactionDataSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='td-detail')
+    applicable_questions = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name='question-detail')
+    # question_answers = serializers.HyperlinkedRelatedField(
+    #     many=True, read_only=True, view_name='questionanswer-detail')
 
     class Meta:
         model = TransactionData
-        fields = ('id', 'url', 'category')
+        fields = ('id', 'url', 'category', 'applicable_questions')
+        # fields = ('id', 'url', 'category', 'applicable_questions', 'question_answers')
 
 
 class QuestionAnswerSerializer(serializers.HyperlinkedModelSerializer):
