@@ -1,13 +1,22 @@
-from django.urls import path
-from rest_framework.urlpatterns import format_suffix_patterns
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
 from . import views
 
+router = DefaultRouter()
+router.register(r'categories', views.CategoryDrfViewSet)
+router.register(r'questions', views.QuestionDrfViewSet)
+router.register(r'options', views.OptionDrfViewSet)
+router.register(r'questionanswers', views.QuestionAnswerDrfViewSet)
+router.register(r'transactiondata',
+                views.TransactionDataDrfViewSet, basename='td')
+
+
 urlpatterns = [
+    path('api/', include(router.urls)),
+
     path('',
          views.IndexView.as_view(), name='index'),
-    path('api/',
-         views.api_root),
 
     path('categories/',
          views.CategoryListView.as_view(), name='category_list'),
@@ -20,11 +29,6 @@ urlpatterns = [
     path('categories/<int:pk>/delete/',
          views.CategoryDeleteView.as_view(), name='category_delete'),
 
-    path('api/categories/',
-         views.CategoryListDrf.as_view(), name='category-list'),
-    path('api/categories/<int:pk>/',
-         views.CategoryDetailDrf.as_view(), name='category-detail'),
-
     path('questions/',
          views.QuestionListView.as_view(), name='question_list'),
     path('questions/<int:pk>/',
@@ -35,11 +39,6 @@ urlpatterns = [
          views.QuestionUpdateView.as_view(), name='question_edit'),
     path('questions/<int:pk>/delete/',
          views.QuestionDeleteView.as_view(), name='question_delete'),
-
-    path('api/questions/',
-         views.QuestionListDrf.as_view(), name='question-list'),
-    path('api/questions/<int:pk>/',
-         views.QuestionDetailDrf.as_view(), name='question-detail'),
 
     path('options/',
          views.OptionListView.as_view(), name='option_list'),
@@ -52,11 +51,6 @@ urlpatterns = [
     path('options/<int:pk>/delete/',
          views.OptionDeleteView.as_view(), name='option_delete'),
 
-    path('api/options/',
-         views.OptionListDrf.as_view(), name='option-list'),
-    path('api/options/<int:pk>/',
-         views.OptionDetailDrf.as_view(), name='option-detail'),
-
     path('td/',
          views.TdListView.as_view(), name='td_list'),
     path('td/new/',
@@ -67,16 +61,6 @@ urlpatterns = [
          views.TdDetailView.as_view(), name='td_detail'),
     path('td/<str:pk>/delete/',
          views.TdDeleteView.as_view(), name='td_delete'),
-
-    path('api/td/',
-         views.TdListDrf.as_view(), name='td-list'),
-    path('api/td/<str:pk>/',
-         views.TdDetailDrf.as_view(), name='td-detail'),
-
-    path('api/questionanswer/',
-         views.QuestionAnswerListDrf.as_view(), name='questionanswer-list'),
-    path('api/questionanswer/<int:pk>/',
-         views.QuestionAnswerDetailDrf.as_view(), name='questionanswer-detail'),
 
     path('lt/',
          views.LatestTransactionView.as_view(), name='latest_transaction'),
@@ -98,5 +82,3 @@ urlpatterns = [
          views.LoadOptionsForQuestionView.as_view(), name='ajax_load_options_for_question'),
 
 ]
-
-urlpatterns = format_suffix_patterns(urlpatterns)
