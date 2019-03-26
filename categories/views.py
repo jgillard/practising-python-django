@@ -16,7 +16,7 @@ import time
 
 from .forms import CategoryForm, QuestionForm, OptionForm, TransactionDataForm, QuestionAnswerForm
 from .models import Category, Question, Option, TransactionData, QuestionAnswer
-from .serializers import CategorySerializer, OptionSerializer, QuestionSerializer
+from .serializers import CategorySerializer, OptionSerializer, QuestionSerializer, TransactionDataSerializer
 
 from .monzo_integration import MonzoRequest, NoAccessTokenException, get_login_url, exchange_authorization_code, \
     OAUTH_STATE_TOKEN
@@ -30,6 +30,7 @@ def api_root(request, format=None):
         'categories': reverse('category-list', request=request, format=format),
         'questions': reverse('question-list', request=request, format=format),
         'options': reverse('option-list', request=request, format=format),
+        'transactiondata': reverse('td-list', request=request, format=format),
     })
 
 
@@ -213,10 +214,20 @@ class TdListView(generic.ListView):
     template_name = 'td_list.html'
 
 
+class TdListDrf(generics.ListCreateAPIView):
+    queryset = TransactionData.objects.all().order_by('-id')
+    serializer_class = TransactionDataSerializer
+
+
 class TdDetailView(generic.DetailView):
     http_method_names = ['get']
     model = TransactionData
     template_name = 'td_detail.html'
+
+
+class TdDetailDrf(generics.RetrieveUpdateDestroyAPIView):
+    queryset = TransactionData.objects.all()
+    serializer_class = TransactionDataSerializer
 
 
 @require_http_methods(['GET', 'POST'])

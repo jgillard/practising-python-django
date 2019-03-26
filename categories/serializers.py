@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Category, Option, Question
+from .models import Category, Option, TransactionData, Question
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
@@ -19,3 +19,11 @@ class OptionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Option
         fields = ('id', 'url', 'title', 'question')
+
+
+class TransactionDataSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='td-detail')
+
+    class Meta:
+        model = TransactionData
+        fields = ('id', 'url', 'category')
