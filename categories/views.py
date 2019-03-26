@@ -6,10 +6,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.decorators.http import require_http_methods
 
-from rest_framework import generics, permissions
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
+from rest_framework import permissions, viewsets
 
 from collections import Counter
 import time
@@ -21,21 +18,14 @@ from .serializers import CategorySerializer, OptionSerializer, QuestionSerialize
 from .monzo_integration import MonzoRequest, NoAccessTokenException, get_login_url, exchange_authorization_code, \
     OAUTH_STATE_TOKEN
 
-### API Root ###
-
-
-@api_view(['GET'])
-def api_root(request, format=None):
-    return Response({
-        'categories': reverse('category-list', request=request, format=format),
-        'questions': reverse('question-list', request=request, format=format),
-        'options': reverse('option-list', request=request, format=format),
-        'transactiondata': reverse('td-list', request=request, format=format),
-        'questionanswers': reverse('questionanswer-list', request=request, format=format),
-    })
-
 
 ### Category Views ###
+
+class CategoryDrfViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all().order_by('-id')
+    serializer_class = CategorySerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
 
 class CategoryListView(generic.ListView):
     http_method_names = ['get']
@@ -43,22 +33,10 @@ class CategoryListView(generic.ListView):
     template_name = 'category_list.html'
 
 
-class CategoryListDrf(generics.ListCreateAPIView):
-    queryset = Category.objects.all().order_by('-id')
-    serializer_class = CategorySerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-
 class CategoryDetailView(generic.DetailView):
     http_method_names = ['get']
     model = Category
     template_name = 'category_detail.html'
-
-
-class CategoryDetailDrf(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class CategoryCreateView(generic.edit.CreateView):
@@ -93,28 +71,22 @@ class CategoryDeleteView(generic.edit.DeleteView):
 
 ### Question Views ###
 
+class QuestionDrfViewSet(viewsets.ModelViewSet):
+    queryset = Question.objects.all().order_by('-id')
+    serializer_class = QuestionSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
 class QuestionListView(generic.ListView):
     http_method_names = ['get']
     model = Question
     template_name = 'question_list.html'
 
 
-class QuestionListDrf(generics.ListCreateAPIView):
-    queryset = Question.objects.all().order_by('-id')
-    serializer_class = QuestionSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-
 class QuestionDetailView(generic.DetailView):
     http_method_names = ['get']
     model = Question
     template_name = 'question_detail.html'
-
-
-class QuestionDetailDrf(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class QuestionCreateView(generic.edit.CreateView):
@@ -150,28 +122,22 @@ class QuestionDeleteView(generic.edit.DeleteView):
 
 ### Option Views ###
 
+class OptionDrfViewSet(viewsets.ModelViewSet):
+    queryset = Option.objects.all().order_by('-id')
+    serializer_class = OptionSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
 class OptionListView(generic.ListView):
     http_method_names = ['get']
     model = Option
     template_name = 'option_list.html'
 
 
-class OptionListDrf(generics.ListCreateAPIView):
-    queryset = Option.objects.all().order_by('-id')
-    serializer_class = OptionSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-
 class OptionDetailView(generic.DetailView):
     http_method_names = ['get']
     model = Option
     template_name = 'option_detail.html'
-
-
-class OptionDetailDrf(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Option.objects.all()
-    serializer_class = OptionSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class OptionCreateView(generic.edit.CreateView):
@@ -215,18 +181,18 @@ class OptionDeleteView(generic.edit.DeleteView):
 
 ### QuestionAnswer Views ###
 
-class QuestionAnswerListDrf(generics.ListCreateAPIView):
+class QuestionAnswerDrfViewSet(viewsets.ModelViewSet):
     queryset = QuestionAnswer.objects.all().order_by('-id')
     serializer_class = QuestionAnswerSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
-class QuestionAnswerDetailDrf(generics.RetrieveUpdateDestroyAPIView):
-    queryset = QuestionAnswer.objects.all()
-    serializer_class = QuestionAnswerSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
 ### Transaction Views ###
+
+class TransactionDataDrfViewSet(viewsets.ModelViewSet):
+    queryset = TransactionData.objects.all().order_by('-id')
+    serializer_class = TransactionDataSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class TdListView(generic.ListView):
@@ -235,22 +201,10 @@ class TdListView(generic.ListView):
     template_name = 'td_list.html'
 
 
-class TdListDrf(generics.ListCreateAPIView):
-    queryset = TransactionData.objects.all().order_by('-id')
-    serializer_class = TransactionDataSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
-
 class TdDetailView(generic.DetailView):
     http_method_names = ['get']
     model = TransactionData
     template_name = 'td_detail.html'
-
-
-class TdDetailDrf(generics.RetrieveUpdateDestroyAPIView):
-    queryset = TransactionData.objects.all()
-    serializer_class = TransactionDataSerializer
-    permission_classes = (permissions.IsAuthenticated,)
 
 
 @require_http_methods(['GET', 'POST'])
