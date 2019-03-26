@@ -141,7 +141,7 @@ class TransactionData(models.Model):
 
 
 class QuestionAnswer(models.Model):
-    txid = models.ForeignKey(
+    td = models.ForeignKey(
         'TransactionData',
 
         # prevent deletion of TransactionData if it has QuestionAnswer

@@ -112,7 +112,7 @@ class TestTransactionData(TestCase):
         )
 
         self.qa = models.QuestionAnswer.objects.create(
-            txid=self.td,
+            td=self.td,
             question=self.question,
             option_answer=self.option,
             number_answer=None

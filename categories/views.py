@@ -242,7 +242,7 @@ class LatestTransactionView(LoginRequiredMixin, generic.TemplateView):
             context['td'] = TransactionData.objects.get(pk=latest['id'])
             context['qs'] = Question.objects.filter(
                 category=context['td'].category)
-            context['qas'] = QuestionAnswer.objects.filter(txid=latest['id'])
+            context['qas'] = QuestionAnswer.objects.filter(td=latest['id'])
         except TransactionData.DoesNotExist:
             pass
 
@@ -278,7 +278,7 @@ class WeekView(LoginRequiredMixin, generic.TemplateView):
         for spend in spending:
             spend['td_obj'] = None
             for td in tds:
-                if td.txid == spend['id']:
+                if td.id == spend['id']:
                     spend['td_obj'] = td
 
         # Put the latest transactions at the front of the list
@@ -441,6 +441,6 @@ def process_txid_post(request):
             # don't create QA if no question supplied
             if request.POST['question'] != '':
                 qa = form_qa.save(commit=False)
-                qa.txid = td
+                qa.td = td
                 qa.save()
         return redirect('txid_detail', pk=td.id)
