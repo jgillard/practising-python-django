@@ -169,18 +169,17 @@ class TxidDetailView(generic.DetailView):
     http_method_names = ['get']
     model = TransactionData
     template_name = 'txid_detail.html'
-    pk_url_kwarg = 'txid'
 
 
 @require_http_methods(['GET', 'POST'])
-def new_txid(request, txid=None):
+def new_txid(request, pk=None):
     # instructions for adding a formset: https://stackoverflow.com/a/28059352
     # requires for additional/configurable number of QAs
 
     if request.method == 'POST':
         return process_txid_post(request)
     else:
-        prefill_data = {'txid': txid}
+        prefill_data = {'id': pk}
         form_td = TransactionDataForm(initial=prefill_data)
         form_qa = QuestionAnswerForm()
 
@@ -193,7 +192,6 @@ class TxidDeleteView(generic.edit.DeleteView):
     model = TransactionData
     template_name = 'generic_delete.html'
     extra_context = {'class_name': 'txid', 'footer': 'foobles'}
-    pk_url_kwarg = 'txid'
     success_url = reverse_lazy('txid_list')
 
     def get_context_data(self, **kwargs):
@@ -329,7 +327,7 @@ class AnalysisView(LoginRequiredMixin, generic.TemplateView):
         for td in ingested_transactions_td:
             # Get top-level category for each transaction
             category = td.category.parent if td.category.parent else td.category
-            monzo_transaction = [t for t in ingested_transactions_monzo if t['id'] == td.txid][0]
+            monzo_transaction = [t for t in ingested_transactions_monzo if t['id'] == td.id][0]
             # spend amounts are always negative
             summary[category.name] -= monzo_transaction['amount']
 
@@ -360,7 +358,7 @@ def ingest_view(request):
         return login_view(request)
 
     transaction = monzo.get_latest_uningested_transaction()
-    form_td = TransactionDataForm(initial={'txid': transaction['id']})
+    form_td = TransactionDataForm(initial={'id': transaction['id']})
     form_qa = QuestionAnswerForm()
     context = {'data': transaction, 'form_td': form_td, 'form_qa': form_qa}
     return render(request, 'ingest.html', context)
@@ -438,4 +436,4 @@ def process_txid_post(request):
                 qa = form_qa.save(commit=False)
                 qa.txid = td
                 qa.save()
-        return redirect('txid_detail', txid=td.txid)
+        return redirect('txid_detail', pk=td.id)

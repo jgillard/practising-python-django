@@ -157,7 +157,7 @@ class MonzoRequest:
         spends = self.get_week_of_spends()
         week_spend_ids = set([t['id'] for t in spends])
         # This model will need the Monzo created date saved to prevent slow queries
-        all_ingested_ids = set(TransactionData.objects.values_list('txid', flat=True))
+        all_ingested_ids = set(TransactionData.objects.values_list('id', flat=True))
 
         week_ingested_ids = week_spend_ids.intersection(all_ingested_ids)
         week_ingested_monzo_transactions = [t for t in spends if t['id'] in week_ingested_ids]
@@ -167,7 +167,7 @@ class MonzoRequest:
         spends = self.get_week_of_spends()
         week_spend_ids = set([t['id'] for t in spends])
         # This model will need the Monzo created date saved to prevent slow queries
-        all_ingested_ids = set(TransactionData.objects.values_list('txid', flat=True))
+        all_ingested_ids = set(TransactionData.objects.values_list('id', flat=True))
 
         week_uningested_ids = week_spend_ids.difference(all_ingested_ids)
         week_uningested_monzo_transactions = [t for t in spends if t['id'] in week_uningested_ids]

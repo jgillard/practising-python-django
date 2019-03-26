@@ -25,7 +25,7 @@ class OptionAdmin(admin.ModelAdmin):
 
 
 class TransactionDataAdmin(admin.ModelAdmin):
-    list_display = ('txid', 'category')
+    list_display = ('id', 'category')
 
 
 class QuestionAnswerAdmin(admin.ModelAdmin):

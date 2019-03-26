@@ -11,9 +11,9 @@
 <ul>
   {% for txid in object_list %}
   <li>
-    <a href="{% url 'txid_detail' txid.txid %}">
+    <a href="{% url 'txid_detail' txid.id %}">
       <p>
-        ID: {{ txid.txid }}<br>
+        ID: {{ txid.id }}<br>
         Name: {{ txid.category }}<br>
       </p>
     </a>

@@ -8,7 +8,7 @@
   <tbody>
     <tr>
       <th scope="row">TXID</th>
-      <td>{{ object.txid }}</td>
+      <td>{{ object.id }}</td>
     </tr>
     <tr>
       <th scope="row">Assigned Category</th>
@@ -34,6 +34,6 @@
   </tbody>
 </table>
 
-<a class="btn btn-danger" href="{% url 'txid_delete' object.txid %}">Delete TXID</a>
+<a class="btn btn-danger" href="{% url 'txid_delete' object.id %}">Delete TXID</a>
 
 {% endblock %}

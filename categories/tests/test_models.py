@@ -96,7 +96,7 @@ class TestTransactionData(TestCase):
         )
 
         self.td = models.TransactionData.objects.create(
-            txid='123',
+            id='123',
             category=self.sub_category
         )
 

@@ -70,7 +70,7 @@ class OptionForm(forms.ModelForm):
 class TransactionDataForm(forms.ModelForm):
     class Meta:
         model = TransactionData
-        fields = ('txid', 'category')
+        fields = ('id', 'category')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
