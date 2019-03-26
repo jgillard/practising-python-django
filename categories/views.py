@@ -6,7 +6,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.decorators.http import require_http_methods
 
-from rest_framework import generics
+from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -46,6 +46,7 @@ class CategoryListView(generic.ListView):
 class CategoryListDrf(generics.ListCreateAPIView):
     queryset = Category.objects.all().order_by('-id')
     serializer_class = CategorySerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class CategoryDetailView(generic.DetailView):
@@ -57,6 +58,7 @@ class CategoryDetailView(generic.DetailView):
 class CategoryDetailDrf(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class CategoryCreateView(generic.edit.CreateView):
@@ -100,6 +102,7 @@ class QuestionListView(generic.ListView):
 class QuestionListDrf(generics.ListCreateAPIView):
     queryset = Question.objects.all().order_by('-id')
     serializer_class = QuestionSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class QuestionDetailView(generic.DetailView):
@@ -111,6 +114,7 @@ class QuestionDetailView(generic.DetailView):
 class QuestionDetailDrf(generics.RetrieveUpdateDestroyAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class QuestionCreateView(generic.edit.CreateView):
@@ -155,6 +159,7 @@ class OptionListView(generic.ListView):
 class OptionListDrf(generics.ListCreateAPIView):
     queryset = Option.objects.all().order_by('-id')
     serializer_class = OptionSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class OptionDetailView(generic.DetailView):
@@ -166,6 +171,7 @@ class OptionDetailView(generic.DetailView):
 class OptionDetailDrf(generics.RetrieveUpdateDestroyAPIView):
     queryset = Option.objects.all()
     serializer_class = OptionSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class OptionCreateView(generic.edit.CreateView):
@@ -212,11 +218,13 @@ class OptionDeleteView(generic.edit.DeleteView):
 class QuestionAnswerListDrf(generics.ListCreateAPIView):
     queryset = QuestionAnswer.objects.all().order_by('-id')
     serializer_class = QuestionAnswerSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class QuestionAnswerDetailDrf(generics.RetrieveUpdateDestroyAPIView):
     queryset = QuestionAnswer.objects.all()
     serializer_class = QuestionAnswerSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 ### Transaction Views ###
 
@@ -230,6 +238,7 @@ class TdListView(generic.ListView):
 class TdListDrf(generics.ListCreateAPIView):
     queryset = TransactionData.objects.all().order_by('-id')
     serializer_class = TransactionDataSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class TdDetailView(generic.DetailView):
@@ -241,6 +250,7 @@ class TdDetailView(generic.DetailView):
 class TdDetailDrf(generics.RetrieveUpdateDestroyAPIView):
     queryset = TransactionData.objects.all()
     serializer_class = TransactionDataSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 @require_http_methods(['GET', 'POST'])
