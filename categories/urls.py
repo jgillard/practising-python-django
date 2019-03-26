@@ -68,6 +68,11 @@ urlpatterns = [
     path('td/<str:pk>/delete/',
          views.TdDeleteView.as_view(), name='td_delete'),
 
+    path('api/td/', views.TdListDrf.as_view(),
+         name='td-list'),
+    path('api/td/<str:pk>/', views.TdDetailDrf.as_view(),
+         name='td-detail'),
+
     path('lt/',
          views.LatestTransactionView.as_view(), name='latest_transaction'),
     path('week/',
