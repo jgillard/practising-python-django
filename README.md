@@ -28,6 +28,10 @@ All setup has not been automated yet. This includes:
 * Creation of 1 user in the `categories_monzouser` Postgres table
 * Filling out `settings_dev.ini` for local development, or the Heroku env vars for the deployment.
 
+## Tests
+
+`./manage.py test`
+
 
 ## Deployment
 
