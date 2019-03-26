@@ -10,14 +10,14 @@
 
 <ul>
   {% for txid in object_list %}
-  <li>
-    <a href="{% url 'txid_detail' txid.id %}">
-      <p>
-        ID: {{ txid.id }}<br>
-        Name: {{ txid.category }}<br>
-      </p>
-    </a>
-  </li>
+    <li>
+      <a href="{% url 'txid_detail' txid.id %}">
+        <p>
+          ID: {{ txid.id }}<br>
+          Name: {{ txid.category }}<br>
+        </p>
+      </a>
+    </li>
   {% endfor %}
 </ul>
 

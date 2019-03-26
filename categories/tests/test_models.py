@@ -121,8 +121,10 @@ class TestTransactionData(TestCase):
     def test_delete(self):
         # Test that dependent qas are deleted too
         self.td.delete()
-        self.assertRaises(models.QuestionAnswer.DoesNotExist, models.QuestionAnswer.objects.get, pk=self.td.pk)
-        self.assertRaises(models.TransactionData.DoesNotExist, models.TransactionData.objects.get, pk=self.td.pk)
+        self.assertRaises(models.QuestionAnswer.DoesNotExist,
+                          models.QuestionAnswer.objects.get, pk=self.td.pk)
+        self.assertRaises(models.TransactionData.DoesNotExist,
+                          models.TransactionData.objects.get, pk=self.td.pk)
 
     def test_transactiondata_get_applicable_questions(self):
         got = self.td.category.questions[0]

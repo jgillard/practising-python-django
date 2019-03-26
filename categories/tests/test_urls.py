@@ -16,19 +16,23 @@ class TestUrls(SimpleTestCase):
 
     def test_resolves_category_detail(self):
         url = reverse('category_detail', args=[1])
-        self.assertEquals(resolve(url).func.view_class, views.CategoryDetailView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views.CategoryDetailView)
 
     def test_resolves_category_new(self):
         url = reverse('category_new')
-        self.assertEquals(resolve(url).func.view_class, views.CategoryCreateView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views.CategoryCreateView)
 
     def test_resolves_category_edit(self):
         url = reverse('category_edit', args=[1])
-        self.assertEquals(resolve(url).func.view_class, views.CategoryUpdateView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views.CategoryUpdateView)
 
     def test_resolves_category_delete(self):
         url = reverse('category_delete', args=[1])
-        self.assertEquals(resolve(url).func.view_class, views.CategoryDeleteView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views.CategoryDeleteView)
 
     def test_resolves_question_list(self):
         url = reverse('question_list')
@@ -36,19 +40,23 @@ class TestUrls(SimpleTestCase):
 
     def test_resolves_question_detail(self):
         url = reverse('question_detail', args=[1])
-        self.assertEquals(resolve(url).func.view_class, views.QuestionDetailView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views.QuestionDetailView)
 
     def test_resolves_question_new(self):
         url = reverse('question_new')
-        self.assertEquals(resolve(url).func.view_class, views.QuestionCreateView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views.QuestionCreateView)
 
     def test_resolves_question_edit(self):
         url = reverse('question_edit', args=[1])
-        self.assertEquals(resolve(url).func.view_class, views.QuestionUpdateView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views.QuestionUpdateView)
 
     def test_resolves_question_delete(self):
         url = reverse('question_delete', args=[1])
-        self.assertEquals(resolve(url).func.view_class, views.QuestionDeleteView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views.QuestionDeleteView)
 
     def test_resolves_option_list(self):
         url = reverse('option_list')
@@ -97,7 +105,8 @@ class TestUrls(SimpleTestCase):
 
     def test_resolves_latest_transaction(self):
         url = reverse('latest_transaction')
-        self.assertEquals(resolve(url).func.view_class, views.LatestTransactionView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views.LatestTransactionView)
 
     def test_resolves_week(self):
         url = reverse('week')
@@ -121,8 +130,10 @@ class TestUrls(SimpleTestCase):
 
     def test_resolves_ajax_load_questions_for_category(self):
         url = reverse('ajax_load_questions_for_category')
-        self.assertEquals(resolve(url).func.view_class, views.LoadQuestionsForCategoryView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views.LoadQuestionsForCategoryView)
 
     def test_resolves_ajax_load_options_for_question(self):
         url = reverse('ajax_load_options_for_question')
-        self.assertEquals(resolve(url).func.view_class, views.LoadOptionsForQuestionView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views.LoadOptionsForQuestionView)

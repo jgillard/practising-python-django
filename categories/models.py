@@ -131,7 +131,8 @@ class TransactionData(models.Model):
     @property
     def applicable_questions(self):
         category_questions = Question.objects.filter(category=self.category)
-        parent_category_questions = Question.objects.filter(category=self.category.parent)
+        parent_category_questions = Question.objects.filter(
+            category=self.category.parent)
         return category_questions.union(parent_category_questions)
 
     @property

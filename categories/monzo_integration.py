@@ -101,7 +101,8 @@ class MonzoAuth:
 
         elif data['code'] == 'unauthorized.bad_refresh_token.evicted':
             print('refresh_token has been evicted by another login')
-            raise PermissionDenied('refresh_token has been evicted by another login')
+            raise PermissionDenied(
+                'refresh_token has been evicted by another login')
 
         elif data['code'] == 'unauthorized.bad_refresh_token':
             print('refresh_token is missing/malformed')
@@ -129,15 +130,18 @@ class MonzoRequest:
         since = one_week_ago.isoformat(timespec='seconds') + 'Z'
         params = {**self.params, 'since': since}
 
-        r = requests.get(self.TRANSACTIONS_ENDPOINT, params=params, headers=self.headers)
+        r = requests.get(self.TRANSACTIONS_ENDPOINT,
+                         params=params, headers=self.headers)
         data = r.json()
 
-        spending = [t for t in data['transactions'] if t['include_in_spending']]
+        transactions = data['transactions']
+        spending = [t for t in transactions if t['include_in_spending']]
         return spending
 
     def get_transaction(self, id: str) -> Dict:
         params = {**self.params, 'expand[]': 'merchant'}
-        r = requests.get(f'{self.TRANSACTIONS_ENDPOINT}/{id}', params=params, headers=self.headers)
+        url = f'{self.TRANSACTIONS_ENDPOINT}/{id}'
+        r = requests.get(url, params=params, headers=self.headers)
         transaction = r.json()['transaction']
         return transaction
 
@@ -157,20 +161,24 @@ class MonzoRequest:
         spends = self.get_week_of_spends()
         week_spend_ids = set([t['id'] for t in spends])
         # This model will need the Monzo created date saved to prevent slow queries
-        all_ingested_ids = set(TransactionData.objects.values_list('id', flat=True))
+        all_ingested_ids = set(
+            TransactionData.objects.values_list('id', flat=True))
 
         week_ingested_ids = week_spend_ids.intersection(all_ingested_ids)
-        week_ingested_monzo_transactions = [t for t in spends if t['id'] in week_ingested_ids]
+        week_ingested_monzo_transactions = [
+            t for t in spends if t['id'] in week_ingested_ids]
         return week_ingested_monzo_transactions
 
     def get_week_of_uningested_spends(self) -> List:
         spends = self.get_week_of_spends()
         week_spend_ids = set([t['id'] for t in spends])
         # This model will need the Monzo created date saved to prevent slow queries
-        all_ingested_ids = set(TransactionData.objects.values_list('id', flat=True))
+        all_ingested_ids = set(
+            TransactionData.objects.values_list('id', flat=True))
 
         week_uningested_ids = week_spend_ids.difference(all_ingested_ids)
-        week_uningested_monzo_transactions = [t for t in spends if t['id'] in week_uningested_ids]
+        week_uningested_monzo_transactions = [
+            t for t in spends if t['id'] in week_uningested_ids]
         return week_uningested_monzo_transactions
 
 

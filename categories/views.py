@@ -136,7 +136,8 @@ class OptionCreateView(generic.edit.CreateView):
     def post(self, request, *args, **kwargs):
         if 'save-and-add-another' in request.POST:
             question_id = self.request.POST.get('question')
-            self.success_url = reverse_lazy('option_new') + f'?question={question_id}'
+            self.success_url = reverse_lazy(
+                'option_new') + f'?question={question_id}'
         return super().post(self, request, *args, **kwargs)
 
 
@@ -221,7 +222,8 @@ class LatestTransactionView(LoginRequiredMixin, generic.TemplateView):
         try:
             MonzoRequest()
         except NoAccessTokenException:
-            self.request.session['final_redirect'] = reverse('latest_transaction')
+            self.request.session['final_redirect'] = reverse(
+                'latest_transaction')
             return redirect('login_view')
 
         return super().dispatch(request, *args, **kwargs)
@@ -238,7 +240,8 @@ class LatestTransactionView(LoginRequiredMixin, generic.TemplateView):
         context['req_1_secs'] = req_secs
         try:
             context['td'] = TransactionData.objects.get(pk=latest['id'])
-            context['qs'] = Question.objects.filter(category=context['td'].category)
+            context['qs'] = Question.objects.filter(
+                category=context['td'].category)
             context['qas'] = QuestionAnswer.objects.filter(txid=latest['id'])
         except TransactionData.DoesNotExist:
             pass
@@ -306,7 +309,7 @@ class AnalysisView(LoginRequiredMixin, generic.TemplateView):
         monzo = MonzoRequest()
         spending = monzo.get_week_of_spends()
 
-        ############################### sums
+        # sums
         spending_sum_pennies = abs(sum([t['amount'] for t in spending]))
 
         ingested_spends = monzo.get_week_of_ingested_spends()
@@ -316,18 +319,22 @@ class AnalysisView(LoginRequiredMixin, generic.TemplateView):
         diff = spending_sum_pennies - ingested_sum_pennies
 
         uningested_transactions = monzo.get_week_of_uningested_spends()
-        uningested_sum_pennies = abs(sum([t['amount'] for t in uningested_transactions]))
+        uningested_sum_pennies = abs(
+            sum([t['amount'] for t in uningested_transactions]))
 
-        ############################# some category stuff
+        # some category stuff
         ingested_transactions_monzo = monzo.get_week_of_ingested_spends()
-        ingested_transaction_ids = [t['id'] for t in ingested_transactions_monzo]
-        ingested_transactions_td = list(TransactionData.objects.filter(pk__in=ingested_transaction_ids))
+        ingested_transaction_ids = [t['id']
+                                    for t in ingested_transactions_monzo]
+        ingested_transactions_td = list(
+            TransactionData.objects.filter(pk__in=ingested_transaction_ids))
 
         summary = Counter()
         for td in ingested_transactions_td:
             # Get top-level category for each transaction
             category = td.category.parent if td.category.parent else td.category
-            monzo_transaction = [t for t in ingested_transactions_monzo if t['id'] == td.id][0]
+            monzo_transaction = [
+                t for t in ingested_transactions_monzo if t['id'] == td.id][0]
             # spend amounts are always negative
             summary[category.name] -= monzo_transaction['amount']
 
