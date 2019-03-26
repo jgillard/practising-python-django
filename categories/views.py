@@ -16,7 +16,7 @@ import time
 
 from .forms import CategoryForm, QuestionForm, OptionForm, TransactionDataForm, QuestionAnswerForm
 from .models import Category, Question, Option, TransactionData, QuestionAnswer
-from .serializers import CategorySerializer, OptionSerializer, QuestionSerializer, TransactionDataSerializer
+from .serializers import CategorySerializer, OptionSerializer, QuestionSerializer, QuestionAnswerSerializer, TransactionDataSerializer
 
 from .monzo_integration import MonzoRequest, NoAccessTokenException, get_login_url, exchange_authorization_code, \
     OAUTH_STATE_TOKEN
@@ -31,6 +31,7 @@ def api_root(request, format=None):
         'questions': reverse('question-list', request=request, format=format),
         'options': reverse('option-list', request=request, format=format),
         'transactiondata': reverse('td-list', request=request, format=format),
+        'questionanswers': reverse('questionanswer-list', request=request, format=format),
     })
 
 
@@ -206,7 +207,19 @@ class OptionDeleteView(generic.edit.DeleteView):
     success_url = reverse_lazy('option_list')
 
 
+### QuestionAnswer Views ###
+
+class QuestionAnswerListDrf(generics.ListCreateAPIView):
+    queryset = QuestionAnswer.objects.all().order_by('-id')
+    serializer_class = QuestionAnswerSerializer
+
+
+class QuestionAnswerDetailDrf(generics.RetrieveUpdateDestroyAPIView):
+    queryset = QuestionAnswer.objects.all()
+    serializer_class = QuestionAnswerSerializer
+
 ### Transaction Views ###
+
 
 class TdListView(generic.ListView):
     http_method_names = ['get']
