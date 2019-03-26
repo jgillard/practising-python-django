@@ -416,13 +416,18 @@ class LoadOptionsForQuestionView(generic.TemplateView):
     http_method_names = ['get']
     template_name = 'components/option_dropdown_list.html'
 
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        if context['answer_type'] == 'N':
+            return HttpResponse(status=204)
+        return self.render_to_response(context)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         question_id = self.request.GET.get('question')
         question = Question.objects.get(pk__exact=question_id)
-        if question.answer_type == 'N':
-            return HttpResponse(status=204)
+        context['answer_type'] = question.answer_type
         options = question.options
         context['options'] = options
 
