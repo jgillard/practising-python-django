@@ -170,3 +170,17 @@ def ingest_view(request):
     context = {'transaction': transaction,
                'form_td': form_td, 'form_qa': form_qa}
     return render(request, 'ingest.html', context)
+
+
+@require_http_methods(['GET'])
+def category_tree_view(request):
+    categories = Category.objects.all()
+
+    top_level_categories = {c: [] for c in categories if not c.parent}
+    sub_level_categories = [c for c in categories if c.parent]
+
+    for category in sub_level_categories:
+        top_level_categories[category.parent].append(category)
+
+    context = {'object_list': top_level_categories}
+    return render(request, 'category_list_tree.html', context)

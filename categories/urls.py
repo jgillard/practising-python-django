@@ -70,6 +70,8 @@ urlpatterns = [
          views_experimental.AnalysisView.as_view(), name='analysis_view'),
     path('ingest/',
          views_experimental.ingest_view, name='ingest_view'),
+    path('categorytree/',
+         views_experimental.category_tree_view, name='category_tree_view'),
 
     path('login/',
          views.login_view, name='login_view'),

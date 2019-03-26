@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<style>
+  p {
+    margin-bottom: 0;
+  }
+</style>
+
+<h2>Category Tree</h2>
+
+<ul>
+  {% for category, subcat_list in object_list.items %}
+    <li>
+      <a href="{% url 'category_detail' category.id %}">
+        <p>{{ category.id }}: {{ category.name }}</p>
+      </a>
+      <ul>
+        {% for category in subcat_list %}
+          <li>
+            <a href="{% url 'category_detail' category.id %}">
+              <p>{{ category.id }}: {{ category.name }}</p>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}
