@@ -78,30 +78,30 @@ class TestUrls(SimpleTestCase):
         url = reverse('option_delete', args=[1])
         self.assertEquals(resolve(url).func.view_class, views.OptionDeleteView)
 
-    def test_resolves_txid_list(self):
-        url = reverse('txid_list')
-        self.assertEquals(resolve(url).func.view_class, views.TxidListView)
+    def test_resolves_td_list(self):
+        url = reverse('td_list')
+        self.assertEquals(resolve(url).func.view_class, views.TdListView)
 
-    def test_resolves_txid_new(self):
-        url = reverse('txid_new')
-        self.assertEquals(resolve(url).func, views.new_txid)
+    def test_resolves_td_new(self):
+        url = reverse('td_new')
+        self.assertEquals(resolve(url).func, views.new_td)
 
-    def test_resolves_txid_new_with_arg(self):
-        url = reverse('txid_new', args=[1])
-        self.assertEquals(resolve(url).func, views.new_txid)
+    def test_resolves_td_new_with_arg(self):
+        url = reverse('td_new', args=[1])
+        self.assertEquals(resolve(url).func, views.new_td)
 
-    def test_resolves_txid_detail(self):
-        url = reverse('txid_detail', args=[1])
-        self.assertEquals(resolve(url).func.view_class, views.TxidDetailView)
+    def test_resolves_td_detail(self):
+        url = reverse('td_detail', args=[1])
+        self.assertEquals(resolve(url).func.view_class, views.TdDetailView)
 
     # NOT IMPLEMENTED
-    # def test_resolves_txid_edit(self):
-    #     url = reverse('txid_edit', args=[1])
-    #     self.assertEquals(resolve(url).func.view_class, views.TxidUpdateView)
+    # def test_resolves_td_edit(self):
+    #     url = reverse('td_edit', args=[1])
+    #     self.assertEquals(resolve(url).func.view_class, views.TdUpdateView)
 
-    def test_resolves_txid_delete(self):
-        url = reverse('txid_delete', args=[1])
-        self.assertEquals(resolve(url).func.view_class, views.TxidDeleteView)
+    def test_resolves_td_delete(self):
+        url = reverse('td_delete', args=[1])
+        self.assertEquals(resolve(url).func.view_class, views.TdDeleteView)
 
     def test_resolves_latest_transaction(self):
         url = reverse('latest_transaction')

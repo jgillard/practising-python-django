@@ -24,7 +24,7 @@
       <tr {% if obj.td_obj %}class="table-success"{% endif %}>
         <td>
           {% if obj.td_obj %}
-            <a href="{% url 'txid_detail' obj.id %}">{{ obj.description }}</a>
+            <a href="{% url 'td_detail' obj.id %}">{{ obj.description }}</a>
           {% else %}
             {{ obj.description }}
           {% endif %}
@@ -34,7 +34,7 @@
         <td>{{ obj.local_amount|abs|div:100 }} {{ obj.local_currency }}</td>
         <td>
           {% if not obj.td_obj %}
-            <a class="btn btn-dark" href="{% url 'txid_new' obj.id %}">New TD</a>
+            <a class="btn btn-dark" href="{% url 'td_new' obj.id %}">New TD</a>
           {% endif %}
         </td>
       </tr>

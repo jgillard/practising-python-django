@@ -1,4 +1,4 @@
-<form method="POST" id="txidForm"
+<form method="POST" id="tdForm"
       data-questions-url="{% url 'ajax_load_questions_for_category' %}"
       data-options-url="{% url 'ajax_load_options_for_question' %}">
   {% csrf_token %}
@@ -20,7 +20,7 @@
   });
 
   $("#id_category").change(function () {
-    var url = $("#txidForm").attr("data-questions-url");
+    var url = $("#tdForm").attr("data-questions-url");
     var categoryId = $(this).val();
     if (categoryId === '') { return; }
 
@@ -35,7 +35,7 @@
   });
 
   $("#id_question").change(function () {
-    var url = $("#txidForm").attr("data-options-url");
+    var url = $("#tdForm").attr("data-options-url");
     var questionId = $(this).val();
 
     $.ajax({
