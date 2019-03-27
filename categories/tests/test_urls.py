@@ -78,30 +78,33 @@ class TestUrls(SimpleTestCase):
         url = reverse('option_delete', args=[1])
         self.assertEquals(resolve(url).func.view_class, views.OptionDeleteView)
 
-    def test_resolves_td_list(self):
-        url = reverse('td_list')
-        self.assertEquals(resolve(url).func.view_class, views.TdListView)
+    def test_resolves_transaction_list(self):
+        url = reverse('transaction_list')
+        self.assertEquals(resolve(url).func.view_class,
+                          views.TransactionListView)
 
-    def test_resolves_td_new(self):
-        url = reverse('td_new')
-        self.assertEquals(resolve(url).func, views.new_td)
+    def test_resolves_transaction_new(self):
+        url = reverse('transaction_new')
+        self.assertEquals(resolve(url).func, views.new_transaction)
 
-    def test_resolves_td_new_with_arg(self):
-        url = reverse('td_new', args=[1])
-        self.assertEquals(resolve(url).func, views.new_td)
+    def test_resolves_transaction_new_with_arg(self):
+        url = reverse('transaction_new', args=[1])
+        self.assertEquals(resolve(url).func, views.new_transaction)
 
-    def test_resolves_td_detail(self):
-        url = reverse('td_detail', args=[1])
-        self.assertEquals(resolve(url).func.view_class, views.TdDetailView)
+    def test_resolves_transaction_detail(self):
+        url = reverse('transaction_detail', args=[1])
+        self.assertEquals(resolve(url).func.view_class,
+                          views.TransactionDetailView)
 
     # NOT IMPLEMENTED
-    # def test_resolves_td_edit(self):
-    #     url = reverse('td_edit', args=[1])
-    #     self.assertEquals(resolve(url).func.view_class, views.TdUpdateView)
+    # def test_resolves_transaction_edit(self):
+    #     url = reverse('transaction_edit', args=[1])
+    #     self.assertEquals(resolve(url).func.view_class, views.transactionUpdateView)
 
-    def test_resolves_td_delete(self):
-        url = reverse('td_delete', args=[1])
-        self.assertEquals(resolve(url).func.view_class, views.TdDeleteView)
+    def test_resolves_transaction_delete(self):
+        url = reverse('transaction_delete', args=[1])
+        self.assertEquals(resolve(url).func.view_class,
+                          views.TransactionDeleteView)
 
     def test_resolves_latest_transaction(self):
         url = reverse('latest_transaction')

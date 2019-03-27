@@ -140,7 +140,7 @@ class Transaction(models.Model):
 
 
 class QuestionAnswer(models.Model):
-    td = models.ForeignKey(
+    transaction = models.ForeignKey(
         'Transaction',
 
         # prevent deletion of Transaction if it has QuestionAnswer

@@ -90,7 +90,7 @@ class TestTransaction(TestCase):
             parent=self.parent_category
         )
 
-        self.td = models.Transaction.objects.create(
+        self.transaction = models.Transaction.objects.create(
             id='123',
             category=self.sub_category
         )
@@ -107,7 +107,7 @@ class TestTransaction(TestCase):
         )
 
         self.qa = models.QuestionAnswer.objects.create(
-            td=self.td,
+            transaction=self.transaction,
             question=self.question,
             option_answer=self.option,
             number_answer=None
@@ -115,18 +115,18 @@ class TestTransaction(TestCase):
 
     def test_delete(self):
         # Test that dependent qas are deleted too
-        self.td.delete()
+        self.transaction.delete()
         self.assertRaises(models.QuestionAnswer.DoesNotExist,
-                          models.QuestionAnswer.objects.get, pk=self.td.pk)
+                          models.QuestionAnswer.objects.get, pk=self.transaction.pk)
         self.assertRaises(models.Transaction.DoesNotExist,
-                          models.Transaction.objects.get, pk=self.td.pk)
+                          models.Transaction.objects.get, pk=self.transaction.pk)
 
     def test_transaction_get_applicable_questions(self):
-        got = self.td.category.questions[0]
+        got = self.transaction.category.questions[0]
         want = self.question
         self.assertEquals(got, want)
 
     def test_transaction_get_question_answers(self):
-        got = self.td.question_answers[0]
+        got = self.transaction.question_answers[0]
         want = self.qa
         self.assertEquals(got, want)

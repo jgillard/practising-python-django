@@ -11,7 +11,7 @@ import time
 from .forms import *
 from .models import *
 from .monzo_integration import MonzoRequest, NoAccessTokenException
-from .views import login_view, process_td_post
+from .views import login_view, process_transaction_post
 
 
 class LatestTransactionView(LoginRequiredMixin, generic.TemplateView):
@@ -39,10 +39,11 @@ class LatestTransactionView(LoginRequiredMixin, generic.TemplateView):
         context['monzo_transaction'] = latest
         context['req_1_secs'] = req_secs
         try:
-            context['td'] = Transaction.objects.get(pk=latest['id'])
+            context['transaction'] = Transaction.objects.get(pk=latest['id'])
             context['qs'] = Question.objects.filter(
-                category=context['td'].category)
-            context['qas'] = QuestionAnswer.objects.filter(td=latest['id'])
+                category=context['transaction'].category)
+            context['qas'] = QuestionAnswer.objects.filter(
+                transaction=latest['id'])
         except Transaction.DoesNotExist:
             pass
 
@@ -71,15 +72,15 @@ class WeekView(LoginRequiredMixin, generic.TemplateView):
         req_1_secs = time.time() - t0
 
         ids = [t['id'] for t in spending]
-        # get any TD objects with a matching ID
-        tds = list(Transaction.objects.filter(pk__in=ids))
+        # get any Transaction objects with a matching ID
+        transactions = list(Transaction.objects.filter(pk__in=ids))
 
         # Attach Transaction object to monzo spends if it exists
         for spend in spending:
-            spend['td_obj'] = None
-            for td in tds:
-                if td.id == spend['id']:
-                    spend['td_obj'] = td
+            spend['transaction'] = None
+            for transaction in transactions:
+                if transaction.id == spend['id']:
+                    spend['transaction'] = transaction
 
         # Put the latest transactions at the front of the list
         spending = spending[::-1]
@@ -126,15 +127,15 @@ class AnalysisView(LoginRequiredMixin, generic.TemplateView):
         ingested_transactions_monzo = monzo.get_week_of_ingested_spends()
         ingested_transaction_ids = [t['id']
                                     for t in ingested_transactions_monzo]
-        ingested_transactions_td = list(
+        ingested_transactions = list(
             Transaction.objects.filter(pk__in=ingested_transaction_ids))
 
         summary = Counter()
-        for td in ingested_transactions_td:
+        for transaction in ingested_transactions:
             # Get top-level category for each transaction
-            category = td.category.parent if td.category.parent else td.category
+            category = transaction.category.parent if transaction.category.parent else transaction.category
             monzo_transaction = [
-                t for t in ingested_transactions_monzo if t['id'] == td.id][0]
+                t for t in ingested_transactions_monzo if t['id'] == transaction.id][0]
             # spend amounts are always negative
             summary[category.name] -= monzo_transaction['amount']
 
@@ -156,7 +157,7 @@ class AnalysisView(LoginRequiredMixin, generic.TemplateView):
 @require_http_methods(['GET', 'POST'])
 def ingest_view(request):
     if request.method == 'POST':
-        return process_td_post(request)
+        return process_transaction_post(request)
 
     try:
         monzo = MonzoRequest()
@@ -165,10 +166,10 @@ def ingest_view(request):
         return login_view(request)
 
     transaction = monzo.get_latest_uningested_transaction()
-    form_td = TransactionForm(initial={'id': transaction['id']})
+    form_transaction = TransactionForm(initial={'id': transaction['id']})
     form_qa = QuestionAnswerForm()
     context = {'transaction': transaction,
-               'form_td': form_td, 'form_qa': form_qa}
+               'form_transaction': form_transaction, 'form_qa': form_qa}
     return render(request, 'ingest.html', context)
 
 

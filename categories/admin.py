@@ -29,7 +29,8 @@ class TransactionAdmin(admin.ModelAdmin):
 
 
 class QuestionAnswerAdmin(admin.ModelAdmin):
-    list_display = ('td', 'question', 'option_answer', 'number_answer')
+    list_display = ('transaction', 'question',
+                    'option_answer', 'number_answer')
 
 
 class MonzoUserAdmin(admin.ModelAdmin):

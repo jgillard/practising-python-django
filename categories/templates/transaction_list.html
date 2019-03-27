@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div>
+  <h2 class="d-inline-block">Stored Transactions</h2>
+  <a class="btn btn-dark float-right" href="{% url 'transaction_new' %}">Add New</a>
+</div>
+
+<ul>
+  {% for transaction in object_list %}
+    <li>
+      <a href="{% url 'transaction_detail' transaction.id %}">
+        <p>
+          ID: {{ transaction.id }}<br>
+          Name: {{ transaction.category }}<br>
+        </p>
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

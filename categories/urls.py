@@ -8,8 +8,7 @@ router.register(r'categories', views.CategoryDrfViewSet)
 router.register(r'questions', views.QuestionDrfViewSet)
 router.register(r'options', views.OptionDrfViewSet)
 router.register(r'questionanswers', views.QuestionAnswerDrfViewSet)
-router.register(r'transaction',
-                views.TransactionDrfViewSet, basename='td')
+router.register(r'transactions', views.TransactionDrfViewSet)
 
 
 urlpatterns = [
@@ -51,16 +50,16 @@ urlpatterns = [
     path('options/<int:pk>/delete/',
          views.OptionDeleteView.as_view(), name='option_delete'),
 
-    path('td/',
-         views.TdListView.as_view(), name='td_list'),
-    path('td/new/',
-         views.new_td, name='td_new'),
-    path('td/new/<str:pk>',
-         views.new_td, name='td_new'),
-    path('td/<str:pk>/',
-         views.TdDetailView.as_view(), name='td_detail'),
-    path('td/<str:pk>/delete/',
-         views.TdDeleteView.as_view(), name='td_delete'),
+    path('transactions/',
+         views.TransactionListView.as_view(), name='transaction_list'),
+    path('transactions/new/',
+         views.new_transaction, name='transaction_new'),
+    path('transactions/new/<str:pk>',
+         views.new_transaction, name='transaction_new'),
+    path('transactions/<str:pk>/',
+         views.TransactionDetailView.as_view(), name='transaction_detail'),
+    path('transactions/<str:pk>/delete/',
+         views.TransactionDeleteView.as_view(), name='transaction_delete'),
 
     path('lt/',
          views_experimental.LatestTransactionView.as_view(), name='latest_transaction'),

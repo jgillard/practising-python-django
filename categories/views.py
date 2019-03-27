@@ -190,48 +190,48 @@ class TransactionDrfViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
 
 
-class TdListView(generic.ListView):
+class TransactionListView(generic.ListView):
     http_method_names = ['get']
     model = Transaction
-    template_name = 'td_list.html'
+    template_name = 'transaction_list.html'
 
 
-class TdDetailView(generic.DetailView):
+class TransactionDetailView(generic.DetailView):
     http_method_names = ['get']
     model = Transaction
-    template_name = 'td_detail.html'
+    template_name = 'transaction_detail.html'
 
 
 @require_http_methods(['GET', 'POST'])
-def new_td(request, pk=None):
+def new_transaction(request, pk=None):
     # instructions for adding a formset: https://stackoverflow.com/a/28059352
     # requires for additional/configurable number of QAs
 
     if request.method == 'POST':
-        return process_td_post(request)
+        return process_transaction_post(request)
     else:
         prefill_data = {'id': pk}
-        form_td = TransactionForm(initial=prefill_data)
+        form_transaction = TransactionForm(initial=prefill_data)
         form_qa = QuestionAnswerForm()
 
-        context = {'form_td': form_td, 'form_qa': form_qa}
-        return render(request, 'td_new.html', context=context)
+        context = {'form_transaction': form_transaction, 'form_qa': form_qa}
+        return render(request, 'transaction_new.html', context=context)
 
 
-class TdDeleteView(generic.edit.DeleteView):
+class TransactionDeleteView(generic.edit.DeleteView):
     http_method_names = ['get', 'post']
     model = Transaction
     template_name = 'generic_delete.html'
-    extra_context = {'class_name': 'td', 'footer': 'foobles'}
-    success_url = reverse_lazy('td_list')
+    extra_context = {'class_name': 'transaction', 'footer': 'foobles'}
+    success_url = reverse_lazy('transaction_list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         # add debug data for deletions
-        td = context['object']
-        qas = td.question_answers
-        context['footer'] = f'''In addition to the Transaction: {repr(td)},
+        transaction = context['object']
+        qas = transaction.question_answers
+        context['footer'] = f'''In addition to the Transaction: {repr(transaction)},
         the following QuestionAnswer objects will be first be deleted {list(qas)}'''
 
         return context
@@ -310,15 +310,15 @@ class LoadOptionsForQuestionView(generic.TemplateView):
 ### Shared Logic ###
 
 @require_http_methods(['GET', 'POST'])
-def process_td_post(request):
-    form_td = TransactionForm(request.POST)
+def process_transaction_post(request):
+    form_transaction = TransactionForm(request.POST)
     form_qa = QuestionAnswerForm(request.POST)
-    if all([form_td.is_valid(), form_qa.is_valid()]):
-        td = form_td.save()
+    if all([form_transaction.is_valid(), form_qa.is_valid()]):
+        transaction = form_transaction.save()
         if form_qa.cleaned_data:
             # don't create QA if no question supplied
             if request.POST['question'] != '':
                 qa = form_qa.save(commit=False)
-                qa.td = td
+                qa.transaction = transaction
                 qa.save()
-        return redirect('td_detail', pk=td.id)
+        return redirect('transaction_detail', pk=transaction.id)

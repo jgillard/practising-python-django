@@ -38,8 +38,8 @@
   <br><br><br>
   <h3>Persisted Data</h3>
   <strong>
-    TXID: {{ td.id }}<br>
-    Assigned Category: {{ td.category }}<br>
+    TXID: {{ transaction.id }}<br>
+    Assigned Category: {{ transaction.category }}<br>
     <br>
     Possible Questions:<br>
     <ul>
@@ -58,7 +58,7 @@
     </ul>
   </strong>
   <br><br><br>
-  <a class="btn btn-dark" href="{% url 'td_new' monzo_transaction.id %}">Create TD</a>
+  <a class="btn btn-dark" href="{% url 'transaction_new' monzo_transaction.id %}">Create transaction</a>
   <br><br><br>
   <h3>Original JSON</h3>
   {{ monzo_transaction|pprint }}<br>

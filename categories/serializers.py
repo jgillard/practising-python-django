@@ -28,7 +28,6 @@ class OptionSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class TransactionSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='td-detail')
     applicable_questions = serializers.HyperlinkedRelatedField(
         many=True, read_only=True, view_name='question-detail')
     question_answers = serializers.PrimaryKeyRelatedField(
@@ -41,9 +40,7 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class QuestionAnswerSerializer(serializers.HyperlinkedModelSerializer):
-    td = serializers.HyperlinkedIdentityField(view_name='td-detail')
-
     class Meta:
         model = QuestionAnswer
-        fields = ('id', 'url', 'td', 'question',
+        fields = ('id', 'url', 'transaction', 'question',
                   'option_answer', 'number_answer')

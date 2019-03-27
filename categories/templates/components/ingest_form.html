@@ -1,8 +1,8 @@
-<form method="POST" id="tdForm"
+<form method="POST" id="transactionForm"
       data-questions-url="{% url 'ajax_load_questions_for_category' %}"
       data-options-url="{% url 'ajax_load_options_for_question' %}">
   {% csrf_token %}
-  {{ form_td.as_p }}
+  {{ form_transaction.as_p }}
   {{ form_qa.as_p }}
   <button type="submit" class="save btn btn-dark">Save</button>
 </form>
@@ -20,7 +20,7 @@
   });
 
   $("#id_category").change(function () {
-    var url = $("#tdForm").attr("data-questions-url");
+    var url = $("#transactionForm").attr("data-questions-url");
     var categoryId = $(this).val();
     if (categoryId === '') { return; }
 
@@ -35,7 +35,7 @@
   });
 
   $("#id_question").change(function () {
-    var url = $("#tdForm").attr("data-options-url");
+    var url = $("#transactionForm").attr("data-options-url");
     var questionId = $(this).val();
 
     $.ajax({

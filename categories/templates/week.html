@@ -21,10 +21,10 @@
   </thead>
   <tbody>
     {% for obj in object_list %}
-      <tr {% if obj.td_obj %}class="table-success"{% endif %}>
+      <tr {% if obj.transaction %}class="table-success"{% endif %}>
         <td>
-          {% if obj.td_obj %}
-            <a href="{% url 'td_detail' obj.id %}">{{ obj.description }}</a>
+          {% if obj.transaction %}
+            <a href="{% url 'transaction_detail' obj.id %}">{{ obj.description }}</a>
           {% else %}
             {{ obj.description }}
           {% endif %}
@@ -33,8 +33,8 @@
         <td>{{ obj.amount|abs|div:100 }} {{ obj.currency }}</td>
         <td>{{ obj.local_amount|abs|div:100 }} {{ obj.local_currency }}</td>
         <td>
-          {% if not obj.td_obj %}
-            <a class="btn btn-dark" href="{% url 'td_new' obj.id %}">New TD</a>
+          {% if not obj.transaction %}
+            <a class="btn btn-dark" href="{% url 'transaction_new' obj.id %}">New Transaction</a>
           {% endif %}
         </td>
       </tr>
