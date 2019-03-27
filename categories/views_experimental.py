@@ -85,7 +85,7 @@ class WeekView(LoginRequiredMixin, generic.TemplateView):
         spending = spending[::-1]
 
         context['object_list'] = spending
-        context['reqs1secs'] = req_1_secs
+        context['req_1_secs'] = req_1_secs
 
         return context
 
