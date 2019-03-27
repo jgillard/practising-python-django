@@ -39,11 +39,11 @@ class LatestTransactionView(LoginRequiredMixin, generic.TemplateView):
         context['monzo_transaction'] = latest
         context['req_1_secs'] = req_secs
         try:
-            context['td'] = TransactionData.objects.get(pk=latest['id'])
+            context['td'] = Transaction.objects.get(pk=latest['id'])
             context['qs'] = Question.objects.filter(
                 category=context['td'].category)
             context['qas'] = QuestionAnswer.objects.filter(td=latest['id'])
-        except TransactionData.DoesNotExist:
+        except Transaction.DoesNotExist:
             pass
 
         return context
@@ -72,9 +72,9 @@ class WeekView(LoginRequiredMixin, generic.TemplateView):
 
         ids = [t['id'] for t in spending]
         # get any TD objects with a matching ID
-        tds = list(TransactionData.objects.filter(pk__in=ids))
+        tds = list(Transaction.objects.filter(pk__in=ids))
 
-        # Attach TransactionData object to monzo spends if it exists
+        # Attach Transaction object to monzo spends if it exists
         for spend in spending:
             spend['td_obj'] = None
             for td in tds:
@@ -127,7 +127,7 @@ class AnalysisView(LoginRequiredMixin, generic.TemplateView):
         ingested_transaction_ids = [t['id']
                                     for t in ingested_transactions_monzo]
         ingested_transactions_td = list(
-            TransactionData.objects.filter(pk__in=ingested_transaction_ids))
+            Transaction.objects.filter(pk__in=ingested_transaction_ids))
 
         summary = Counter()
         for td in ingested_transactions_td:
@@ -165,7 +165,7 @@ def ingest_view(request):
         return login_view(request)
 
     transaction = monzo.get_latest_uningested_transaction()
-    form_td = TransactionDataForm(initial={'id': transaction['id']})
+    form_td = TransactionForm(initial={'id': transaction['id']})
     form_qa = QuestionAnswerForm()
     context = {'transaction': transaction,
                'form_td': form_td, 'form_qa': form_qa}

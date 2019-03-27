@@ -65,9 +65,9 @@ class OptionForm(forms.ModelForm):
         fields = ('title', 'question')
 
 
-class TransactionDataForm(forms.ModelForm):
+class TransactionForm(forms.ModelForm):
     class Meta:
-        model = TransactionData
+        model = Transaction
         fields = ('id', 'category')
 
     def __init__(self, *args, **kwargs):

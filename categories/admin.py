@@ -24,7 +24,7 @@ class OptionAdmin(admin.ModelAdmin):
     list_filter = ['question']
 
 
-class TransactionDataAdmin(admin.ModelAdmin):
+class TransactionAdmin(admin.ModelAdmin):
     list_display = ('id', 'category')
 
 
@@ -42,7 +42,7 @@ admin.site.register(Question, QuestionAdmin)
 
 admin.site.register(Option, OptionAdmin)
 
-admin.site.register(TransactionData, TransactionDataAdmin)
+admin.site.register(Transaction, TransactionAdmin)
 
 admin.site.register(QuestionAnswer, QuestionAnswerAdmin)
 

@@ -184,21 +184,21 @@ class QuestionAnswerDrfViewSet(viewsets.ModelViewSet):
 
 ### Transaction Views ###
 
-class TransactionDataDrfViewSet(viewsets.ModelViewSet):
-    queryset = TransactionData.objects.all().order_by('-id')
-    serializer_class = TransactionDataSerializer
+class TransactionDrfViewSet(viewsets.ModelViewSet):
+    queryset = Transaction.objects.all().order_by('-id')
+    serializer_class = TransactionSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
 
 class TdListView(generic.ListView):
     http_method_names = ['get']
-    model = TransactionData
+    model = Transaction
     template_name = 'td_list.html'
 
 
 class TdDetailView(generic.DetailView):
     http_method_names = ['get']
-    model = TransactionData
+    model = Transaction
     template_name = 'td_detail.html'
 
 
@@ -211,7 +211,7 @@ def new_td(request, pk=None):
         return process_td_post(request)
     else:
         prefill_data = {'id': pk}
-        form_td = TransactionDataForm(initial=prefill_data)
+        form_td = TransactionForm(initial=prefill_data)
         form_qa = QuestionAnswerForm()
 
         context = {'form_td': form_td, 'form_qa': form_qa}
@@ -220,7 +220,7 @@ def new_td(request, pk=None):
 
 class TdDeleteView(generic.edit.DeleteView):
     http_method_names = ['get', 'post']
-    model = TransactionData
+    model = Transaction
     template_name = 'generic_delete.html'
     extra_context = {'class_name': 'td', 'footer': 'foobles'}
     success_url = reverse_lazy('td_list')
@@ -231,7 +231,7 @@ class TdDeleteView(generic.edit.DeleteView):
         # add debug data for deletions
         td = context['object']
         qas = td.question_answers
-        context['footer'] = f'''In addition to the TransactionData: {repr(td)},
+        context['footer'] = f'''In addition to the Transaction: {repr(td)},
         the following QuestionAnswer objects will be first be deleted {list(qas)}'''
 
         return context
@@ -311,7 +311,7 @@ class LoadOptionsForQuestionView(generic.TemplateView):
 
 @require_http_methods(['GET', 'POST'])
 def process_td_post(request):
-    form_td = TransactionDataForm(request.POST)
+    form_td = TransactionForm(request.POST)
     form_qa = QuestionAnswerForm(request.POST)
     if all([form_td.is_valid(), form_qa.is_valid()]):
         td = form_td.save()

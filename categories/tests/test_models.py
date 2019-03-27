@@ -78,7 +78,7 @@ class TestQuestionModel(TestCase):
         self.assertEquals(list(got)[0], want)
 
 
-class TestTransactionData(TestCase):
+class TestTransaction(TestCase):
     def setUp(self):
         self.parent_category = models.Category.objects.create(
             name='top-level category',
@@ -90,7 +90,7 @@ class TestTransactionData(TestCase):
             parent=self.parent_category
         )
 
-        self.td = models.TransactionData.objects.create(
+        self.td = models.Transaction.objects.create(
             id='123',
             category=self.sub_category
         )
@@ -118,15 +118,15 @@ class TestTransactionData(TestCase):
         self.td.delete()
         self.assertRaises(models.QuestionAnswer.DoesNotExist,
                           models.QuestionAnswer.objects.get, pk=self.td.pk)
-        self.assertRaises(models.TransactionData.DoesNotExist,
-                          models.TransactionData.objects.get, pk=self.td.pk)
+        self.assertRaises(models.Transaction.DoesNotExist,
+                          models.Transaction.objects.get, pk=self.td.pk)
 
-    def test_transactiondata_get_applicable_questions(self):
+    def test_transaction_get_applicable_questions(self):
         got = self.td.category.questions[0]
         want = self.question
         self.assertEquals(got, want)
 
-    def test_transactiondata_get_question_answers(self):
+    def test_transaction_get_question_answers(self):
         got = self.td.question_answers[0]
         want = self.qa
         self.assertEquals(got, want)

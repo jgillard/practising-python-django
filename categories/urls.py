@@ -8,8 +8,8 @@ router.register(r'categories', views.CategoryDrfViewSet)
 router.register(r'questions', views.QuestionDrfViewSet)
 router.register(r'options', views.OptionDrfViewSet)
 router.register(r'questionanswers', views.QuestionAnswerDrfViewSet)
-router.register(r'transactiondata',
-                views.TransactionDataDrfViewSet, basename='td')
+router.register(r'transaction',
+                views.TransactionDrfViewSet, basename='td')
 
 
 urlpatterns = [

@@ -104,7 +104,7 @@ class Option(models.Model):
         return f'/options/{self.pk}'
 
 
-class TransactionData(models.Model):
+class Transaction(models.Model):
     id = models.CharField(
         primary_key=True,
         max_length=30,
@@ -113,12 +113,9 @@ class TransactionData(models.Model):
     category = models.ForeignKey(
         'Category',
 
-        # prevent deletion of Category if it has TransactionData
+        # prevent deletion of Category if it has Transaction
         on_delete=models.PROTECT,
     )
-
-    class Meta:
-        verbose_name_plural = 'TransactionData'
 
     def __str__(self):
         return self.id
@@ -144,9 +141,9 @@ class TransactionData(models.Model):
 
 class QuestionAnswer(models.Model):
     td = models.ForeignKey(
-        'TransactionData',
+        'Transaction',
 
-        # prevent deletion of TransactionData if it has QuestionAnswer
+        # prevent deletion of Transaction if it has QuestionAnswer
         on_delete=models.PROTECT,
     )
 

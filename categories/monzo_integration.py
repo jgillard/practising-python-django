@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 
 import requests
 
-from .models import TransactionData, MonzoUser
+from .models import Transaction, MonzoUser
 from mysite.settings import MONZO_CLIENT_ID, MONZO_CLIENT_SECRET
 
 API_ROOT = 'https://api.monzo.com'
@@ -162,7 +162,7 @@ class MonzoRequest:
         week_spend_ids = set([t['id'] for t in spends])
         # This model will need the Monzo created date saved to prevent slow queries
         all_ingested_ids = set(
-            TransactionData.objects.values_list('id', flat=True))
+            Transaction.objects.values_list('id', flat=True))
 
         week_ingested_ids = week_spend_ids.intersection(all_ingested_ids)
         week_ingested_monzo_transactions = [
@@ -174,7 +174,7 @@ class MonzoRequest:
         week_spend_ids = set([t['id'] for t in spends])
         # This model will need the Monzo created date saved to prevent slow queries
         all_ingested_ids = set(
-            TransactionData.objects.values_list('id', flat=True))
+            Transaction.objects.values_list('id', flat=True))
 
         week_uningested_ids = week_spend_ids.difference(all_ingested_ids)
         week_uningested_monzo_transactions = [
