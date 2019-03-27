@@ -36,7 +36,7 @@ class LatestTransactionView(LoginRequiredMixin, generic.TemplateView):
         latest = monzo.get_latest_transaction()
         req_secs = time.time() - t0
 
-        context['data'] = latest
+        context['monzo_transaction'] = latest
         context['req_1_secs'] = req_secs
         try:
             context['td'] = TransactionData.objects.get(pk=latest['id'])
@@ -167,5 +167,6 @@ def ingest_view(request):
     transaction = monzo.get_latest_uningested_transaction()
     form_td = TransactionDataForm(initial={'id': transaction['id']})
     form_qa = QuestionAnswerForm()
-    context = {'data': transaction, 'form_td': form_td, 'form_qa': form_qa}
+    context = {'transaction': transaction,
+               'form_td': form_td, 'form_qa': form_qa}
     return render(request, 'ingest.html', context)

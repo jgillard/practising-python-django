@@ -11,28 +11,28 @@
   Get transaction time: {{ reqs1secs|floatformat:3 }}s<br>
   <br>
   <h3>Top-level Data</h3>
-  ID: {{ data.id }}<br>
-  Created: {{ data.created }}<br>
-  Description: {{ data.description }}<br>
-  Amount: {{ data.amount }}<br>
-  Currency: {{ data.currency }}<br>
-  Category: {{ data.category }}<br>
-  is_load: {{ data.is_load }}<br>
-  Local Amount: {{ data.local_amount }}<br>
-  Local Currency: {{ data.local_currency }}<br>
+  ID: {{ monzo_transaction.id }}<br>
+  Created: {{ monzo_transaction.created }}<br>
+  Description: {{ monzo_transaction.description }}<br>
+  Amount: {{ monzo_transaction.amount }}<br>
+  Currency: {{ monzo_transaction.currency }}<br>
+  Category: {{ monzo_transaction.category }}<br>
+  is_load: {{ monzo_transaction.is_load }}<br>
+  Local Amount: {{ monzo_transaction.local_amount }}<br>
+  Local Currency: {{ monzo_transaction.local_currency }}<br>
   <br>
   <h3>Merchant Data</h3>
-  Merchant ID: {{ data.merchant.id }}<br>
-  Merchant Name: {{ data.merchant.name }}<br>
-  Merchant Logo URL: {{ data.merchant.logo }}<br>
-  Merchant Emoji: {{ data.merchant.emoji }}<br>
-  Merchant Category: {{ data.merchant.category }}<br>
-  Merchant Address: {{ data.merchant.address.formatted }}<br>
+  Merchant ID: {{ monzo_transaction.merchant.id }}<br>
+  Merchant Name: {{ monzo_transaction.merchant.name }}<br>
+  Merchant Logo URL: {{ monzo_transaction.merchant.logo }}<br>
+  Merchant Emoji: {{ monzo_transaction.merchant.emoji }}<br>
+  Merchant Category: {{ monzo_transaction.merchant.category }}<br>
+  Merchant Address: {{ monzo_transaction.merchant.address.formatted }}<br>
   <br>
   <h3>Derived Data</h3>
   <strong>
-    Cost: {{ data.amount|abs|div:100 }} {{ data.currency }}<br>
-    Local Cost: {{ data.local_amount|abs|div:100 }} {{ data.local_currency }}<br>
+    Cost: {{ monzo_transaction.amount|abs|div:100 }} {{ monzo_transaction.currency }}<br>
+    Local Cost: {{ monzo_transaction.local_amount|abs|div:100 }} {{ monzo_transaction.local_currency }}<br>
     <img src="{{ data.merchant.logo }}" width="30%">
   </strong>
   <br><br><br>
@@ -58,9 +58,9 @@
     </ul>
   </strong>
   <br><br><br>
-  <a class="btn btn-dark" href="{% url 'td_new' data.id %}">Create TD</a>
+  <a class="btn btn-dark" href="{% url 'td_new' monzo_transaction.id %}">Create TD</a>
   <br><br><br>
   <h3>Original JSON</h3>
-  {{ data|pprint }}<br>
+  {{ monzo_transaction|pprint }}<br>
 
 {% endblock %}

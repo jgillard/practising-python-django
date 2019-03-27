@@ -8,14 +8,14 @@
 <h1>Ingest View</h1>
 
 <div class="card">
-  <img src="{{ data.merchant.logo }}" class="card-img-top" alt="Merchant Image">
+  <img src="{{ transaction.merchant.logo }}" class="card-img-top" alt="Merchant Image">
   <div class="card-body">
-    <h5 class="card-title">{{ data.description }}</h5>
-    <h6 class="card-subtitle mb-2 text-muted">Merchant: {{ data.merchant.name }}</h6>
-    <h6 class="card-subtitle mb-2 text-muted">{{ data.created }}</h6>
-    <p class="card-text">Category: {{ data.category|title }}</p>
-    <p class="card-text text-right">Cost: {{ data.amount|abs|div:100 }} {{ data.currency }}</p>
-    <p class="card-text text-right">Local: {{ data.local_amount|abs|div:100 }} {{ data.local_currency }}</p>
+    <h5 class="card-title">{{ transaction.description }}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">Merchant: {{ transaction.merchant.name }}</h6>
+    <h6 class="card-subtitle mb-2 text-muted">{{ transaction.created }}</h6>
+    <p class="card-text">Category: {{ transaction.category|title }}</p>
+    <p class="card-text text-right">Cost: {{ transaction.amount|abs|div:100 }} {{ transaction.currency }}</p>
+    <p class="card-text text-right">Local: {{ transaction.local_amount|abs|div:100 }} {{ transaction.local_currency }}</p>
   </div>
 </div>
 
