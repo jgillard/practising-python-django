@@ -29,9 +29,9 @@ class TestCategoryModel(TestCase):
     def test_category_get_questions_toplevel(self):
         want = models.Question.objects.create(
             title='attached to parent category',
-            category=self.parent_category,
             answer_type='N'
         )
+        want.categories.add(self.parent_category)
         got = self.parent_category.questions
         self.assertEquals(list(got), [want])
 
@@ -39,15 +39,15 @@ class TestCategoryModel(TestCase):
         # Ensures that questions from parent category are also returned
         q1 = models.Question.objects.create(
             title='attached to parent category',
-            category=self.parent_category,
             answer_type='N'
         )
+        q1.categories.add(self.parent_category)
 
         q2 = models.Question.objects.create(
             title='attached to a subcategory',
-            category=self.sub_category,
             answer_type='N'
         )
+        q2.categories.add(self.sub_category)
 
         got = self.sub_category.questions
         want = [q1, q2]
@@ -63,9 +63,9 @@ class TestQuestionModel(TestCase):
 
         self.question = models.Question.objects.create(
             title='question title',
-            category=self.category,
             answer_type='S'
         )
+        self.question.categories.add(self.category)
 
         self.option = models.Option.objects.create(
             title='option title',
@@ -76,11 +76,6 @@ class TestQuestionModel(TestCase):
         got = self.question.options
         want = self.option
         self.assertEquals(list(got)[0], want)
-
-    def test_question_get_hierarchical_name(self):
-        got = self.question.get_hierarchical_name()
-        want = f'{self.category} -> {self.question}'
-        self.assertEquals(got, want)
 
 
 class TestTransactionData(TestCase):
@@ -102,9 +97,9 @@ class TestTransactionData(TestCase):
 
         self.question = models.Question.objects.create(
             title='attached to parent category',
-            category=self.parent_category,
             answer_type='S'
         )
+        self.question.categories.add(self.parent_category)
 
         self.option = models.Option.objects.create(
             title='option title',

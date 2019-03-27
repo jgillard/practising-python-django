@@ -14,8 +14,8 @@ class OptionInline(admin.TabularInline):
 
 
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'category', 'answer_type')
-    list_filter = ['category']
+    list_display = ('id', 'title', 'answer_type')
+    list_filter = ['categories']
     inlines = [OptionInline]
 
 

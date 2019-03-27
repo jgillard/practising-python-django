@@ -34,11 +34,11 @@ class CategoryForm(forms.ModelForm):
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
-        fields = ('title', 'category', 'answer_type')
+        fields = ('title', 'categories', 'answer_type')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['category'].label_from_instance = lambda obj: obj.get_hierarchical_name()
+        self.fields['categories'].label_from_instance = lambda obj: obj.get_hierarchical_name()
 
     def clean(self):
         logger.error('in clean')
@@ -64,10 +64,6 @@ class OptionForm(forms.ModelForm):
         model = Option
         fields = ('title', 'question')
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['question'].label_from_instance = lambda obj: obj.get_hierarchical_name()
-
 
 class TransactionDataForm(forms.ModelForm):
     class Meta:
@@ -88,5 +84,4 @@ class QuestionAnswerForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['question'].queryset = Question.objects.all()
         self.fields['question'].required = False
-        self.fields['question'].label_from_instance = lambda obj: obj.get_hierarchical_name()
         self.fields['option_answer'].queryset = Option.objects.all()

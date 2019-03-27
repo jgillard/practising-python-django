@@ -59,11 +59,8 @@ class Question(models.Model):
         unique=True,
     )
 
-    category = models.ForeignKey(
-        'Category',
-
-        # prevent deletion of Category if it has Questions
-        on_delete=models.PROTECT
+    categories = models.ManyToManyField(
+        Category
     )
 
     answer_type = models.CharField(
@@ -82,7 +79,7 @@ class Question(models.Model):
         return self.option_set.all()
 
     def get_hierarchical_name(self):
-        return f'{self.category.name} -> {self.title}'
+        return f'{self.title}'
 
 
 class Option(models.Model):
@@ -134,9 +131,10 @@ class TransactionData(models.Model):
 
     @property
     def applicable_questions(self):
-        category_questions = Question.objects.filter(category=self.category)
+        category_questions = Question.objects.filter(
+            categories__in=[self.category])
         parent_category_questions = Question.objects.filter(
-            category=self.category.parent)
+            categories__in=[self.category.parent])
         return category_questions.union(parent_category_questions)
 
     @property
