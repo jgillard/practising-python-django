@@ -14,10 +14,14 @@
   const noOptionHtml = '<option value="">n/a</option>'
 
   $(document).ready(function () {
-    $("#id_question").html(noOptionHtml);
-    $("#id_option_answer").parent().hide();
-    $("#id_number_answer").parent().hide();
-    $("#id_number_answer").attr('type', 'tel');
+    $("#id_form-0-question").html(noOptionHtml);
+    $("#id_form-0-option_answer").parent().hide();
+    $("#id_form-0-number_answer").parent().hide();
+    $("#id_form-0-number_answer").attr('type', 'tel');
+    $("#id_form-1-question").html(noOptionHtml);
+    $("#id_form-1-option_answer").parent().hide();
+    $("#id_form-1-number_answer").parent().hide();
+    $("#id_form-1-number_answer").attr('type', 'tel');
   });
 
   $("#id_category").change(function () {
@@ -29,15 +33,27 @@
       url: url,
       data: { 'category': categoryId },
       success: function (data) {
-        $("#id_question").html(data);
+        $("#id_form-0-question").html(data);
+        $("#id_form-1-question").html(data);
       }
     });
 
   });
 
-  $("#id_question").change(function () {
+  $("#id_form-0-question").change(function() {
+    const formId = 0;
+    const questionId = $(this).val();
+    questionSelected(formId, questionId);
+  });
+
+  $("#id_form-1-question").change(function() {
+    const formId = 1;
+    const questionId = $(this).val();
+    questionSelected(formId, questionId);
+  });
+
+  function questionSelected(formId, questionId) {
     var url = $("#transactionForm").attr("data-options-url");
-    var questionId = $(this).val();
 
     $.ajax({
       url: url,
@@ -45,17 +61,16 @@
       success: function (data, statusText, xhr) {
         if (xhr.status == 204) {
           // question has a number answer type
-          $("#id_option_answer").html(noOptionHtml);
-          $("#id_option_answer").parent().hide();
-          $("#id_number_answer").parent().show();
+          $(`#id_form-${formId}-option_answer`).html(noOptionHtml);
+          $(`#id_form-${formId}-option_answer`).parent().hide();
+          $(`#id_form-${formId}-number_answer`).parent().show();
         } else {
           // question has a string answer type
-          $("#id_option_answer").html(data);
-          $("#id_option_answer").parent().show();
-          $("#id_number_answer").parent().hide();
+          $(`#id_form-${formId}-option_answer`).html(data);
+          $(`#id_form-${formId}-option_answer`).parent().show();
+          $(`#id_form-${formId}-number_answer`).parent().hide();
         }
       }
     });
-
-  });
+  }
 </script>
