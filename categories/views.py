@@ -334,4 +334,7 @@ def process_transaction_post(request):
                 qa = form_qa.save(commit=False)
                 qa.transaction = transaction
                 qa.save()
+        if 'save-and-add-another' in request.POST:
+            return redirect(request.path_info)
+
         return redirect('transaction_detail', pk=transaction.id)

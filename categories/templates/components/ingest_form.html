@@ -4,7 +4,8 @@
   {% csrf_token %}
   {{ form_transaction.as_p }}
   {{ form_qa.as_p }}
-  <button type="submit" class="save btn btn-dark">Save</button>
+  <input type="submit" name="save" value="Save" class="save btn btn-dark">
+  <input type="submit" name="save-and-add-another" value="Save and Add Another" class="save btn btn-light">
 </form>
 <br>
 
