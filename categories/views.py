@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.forms import formset_factory
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
@@ -205,6 +206,7 @@ class TransactionDrfViewSet(viewsets.ModelViewSet):
 class TransactionListView(generic.ListView):
     http_method_names = ['get']
     model = Transaction
+    ordering = ['-pk']
     template_name = 'transaction_list.html'
 
 
@@ -219,14 +221,17 @@ def new_transaction(request, pk=None):
     # instructions for adding a formset: https://stackoverflow.com/a/28059352
     # requires for additional/configurable number of QAs
 
+    QuestionAnswerFormSet = formset_factory(QuestionAnswerForm, min_num=1)
+
     if request.method == 'POST':
-        return process_transaction_post(request)
+        return process_transaction_post(request, QuestionAnswerFormSet)
     else:
         prefill_data = {'id': pk}
         form_transaction = TransactionForm(initial=prefill_data)
-        form_qa = QuestionAnswerForm()
+        formset_questionanswer = QuestionAnswerFormSet()
 
-        context = {'form_transaction': form_transaction, 'form_qa': form_qa}
+        context = {'form_transaction': form_transaction,
+                   'formset_questionanswer': formset_questionanswer}
         return render(request, 'transaction_new.html', context=context)
 
 
@@ -323,17 +328,18 @@ class LoadOptionsForQuestionView(generic.TemplateView):
 ### Shared Logic ###
 
 @require_http_methods(['GET', 'POST'])
-def process_transaction_post(request):
+def process_transaction_post(request, QuestionAnswerFormSet):
     form_transaction = TransactionForm(request.POST)
-    form_qa = QuestionAnswerForm(request.POST)
-    if all([form_transaction.is_valid(), form_qa.is_valid()]):
+    formset_questionanswer = QuestionAnswerFormSet(request.POST)
+    if all([form_transaction.is_valid(), formset_questionanswer.is_valid()]):
         transaction = form_transaction.save()
-        if form_qa.cleaned_data:
-            # don't create QA if no question supplied
-            if request.POST['question'] != '':
-                qa = form_qa.save(commit=False)
-                qa.transaction = transaction
-                qa.save()
+        for inline_form in formset_questionanswer:
+            if inline_form.cleaned_data:
+                # don't create QA if no question supplied
+                if inline_form.cleaned_data['question']:
+                    qa = inline_form.save(commit=False)
+                    qa.transaction = transaction
+                    qa.save()
         if 'save-and-add-another' in request.POST:
             return redirect(request.path_info)
 

@@ -24,10 +24,16 @@
       <tr>
         <th scope="row">QuestionAnswer</th>
           {% if qa.option_answer %}
-            <td>option answer: {{ qa.option_answer }}</td>
+            <td>
+              Question: {{ qa.question }}<br>
+              Option Answer: {{ qa.option_answer }}
+            </td>
           {% endif %}
           {% if qa.number_answer %}
-            <td>number answer: {{ qa.number_answer }}</td>
+            <td>
+              Question: {{ qa.question }}<br>
+              Number Answer: {{ qa.number_answer }}
+            </td>
           {% endif %}
       </tr>
     {% endfor %}

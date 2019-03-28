@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms import formset_factory
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import generic
@@ -156,8 +157,10 @@ class AnalysisView(LoginRequiredMixin, generic.TemplateView):
 @login_required(login_url='/admin/')
 @require_http_methods(['GET', 'POST'])
 def ingest_view(request):
+    QuestionAnswerFormSet = formset_factory(QuestionAnswerForm, min_num=1)
+
     if request.method == 'POST':
-        return process_transaction_post(request)
+        return process_transaction_post(request, QuestionAnswerFormSet)
 
     try:
         monzo = MonzoRequest()
@@ -167,9 +170,10 @@ def ingest_view(request):
 
     transaction = monzo.get_latest_uningested_transaction()
     form_transaction = TransactionForm(initial={'id': transaction['id']})
-    form_qa = QuestionAnswerForm()
+    formset_questionanswer = QuestionAnswerFormSet()
     context = {'transaction': transaction,
-               'form_transaction': form_transaction, 'form_qa': form_qa}
+               'form_transaction': form_transaction,
+               'formset_questionanswer': formset_questionanswer}
     return render(request, 'ingest.html', context)
 
 
