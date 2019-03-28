@@ -1,4 +1,8 @@
-<option value="">---------</option>
-{% for option in options %}
-  <option value="{{ option.pk }}">{{ option.title }}</option>
-{% endfor %}
+{% if options|length > 0 %}
+  <option value="">---------</option>
+  {% for option in options %}
+    <option value="{{ option.pk }}">{{ option.title }}</option>
+  {% endfor %}
+{% else %}
+  <option value="">n/a</option>
+{% endif %}
