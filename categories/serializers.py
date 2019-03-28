@@ -6,10 +6,13 @@ from .models import *
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     questions = serializers.HyperlinkedRelatedField(
         many=True, read_only=True, view_name='question-detail')
+    child_categories = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name='category-detail')
 
     class Meta:
         model = Category
-        fields = ('id', 'url', 'name', 'parent', 'questions')
+        fields = ('id', 'url', 'name', 'parent',
+                  'questions', 'child_categories')
 
 
 class QuestionSerializer(serializers.HyperlinkedModelSerializer):

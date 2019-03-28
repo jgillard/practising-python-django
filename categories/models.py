@@ -47,6 +47,18 @@ class Category(models.Model):
         queryset = Question.objects.filter(pk__in=question_set)
         return queryset
 
+    @property
+    def child_categories(self):
+        child_category_set = self.category_set.all().values_list('id', flat=True)
+        queryset = Category.objects.filter(pk__in=child_category_set)
+        return queryset
+
+    @property
+    def transactions(self):
+        transaction_set = self.transaction_set.all().values_list('id', flat=True)
+        queryset = Transaction.objects.filter(pk__in=transaction_set)
+        return queryset
+
 
 class Question(models.Model):
     OPTION_TYPE_CHOICES = (
@@ -88,7 +100,7 @@ class Option(models.Model):
     )
 
     question = models.ForeignKey(
-        'Question',
+        Question,
 
         # deleting a Question causes its Options to be deleted
         on_delete=models.CASCADE,
@@ -111,7 +123,7 @@ class Transaction(models.Model):
     )
 
     category = models.ForeignKey(
-        'Category',
+        Category,
 
         # prevent deletion of Category if it has Transaction
         on_delete=models.PROTECT,
@@ -141,21 +153,21 @@ class Transaction(models.Model):
 
 class QuestionAnswer(models.Model):
     transaction = models.ForeignKey(
-        'Transaction',
+        Transaction,
 
         # prevent deletion of Transaction if it has QuestionAnswer
         on_delete=models.PROTECT,
     )
 
     question = models.ForeignKey(
-        'Question',
+        Question,
 
         # prevent deletion of Question if it has QuestionAnswer
         on_delete=models.PROTECT,
     )
 
     option_answer = models.ForeignKey(
-        'Option',
+        Option,
 
         # prevent deletion of Option if it has QuestionAnswer
         on_delete=models.PROTECT,

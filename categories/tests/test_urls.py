@@ -2,6 +2,7 @@ from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 
 import categories.views as views
+import categories.views_experimental as views_experimental
 
 
 class TestUrls(SimpleTestCase):
@@ -109,19 +110,21 @@ class TestUrls(SimpleTestCase):
     def test_resolves_latest_transaction(self):
         url = reverse('latest_transaction')
         self.assertEquals(resolve(url).func.view_class,
-                          views.LatestTransactionView)
+                          views_experimental.LatestTransactionView)
 
     def test_resolves_week(self):
         url = reverse('week')
-        self.assertEquals(resolve(url).func.view_class, views.WeekView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views_experimental.WeekView)
 
     def test_resolves_analysis_view(self):
         url = reverse('analysis_view')
-        self.assertEquals(resolve(url).func.view_class, views.AnalysisView)
+        self.assertEquals(resolve(url).func.view_class,
+                          views_experimental.AnalysisView)
 
     def test_resolves_ingest_view(self):
         url = reverse('ingest_view')
-        self.assertEquals(resolve(url).func, views.ingest_view)
+        self.assertEquals(resolve(url).func, views_experimental.ingest_view)
 
     def test_resolves_login(self):
         url = reverse('login_view')

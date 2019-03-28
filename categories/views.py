@@ -57,11 +57,23 @@ class CategoryUpdateView(generic.edit.UpdateView):
 
 class CategoryDeleteView(generic.edit.DeleteView):
     http_method_names = ['get', 'post']
-    # this currently throws an exception if there are child objects
     model = Category
     template_name = 'generic_delete.html'
     extra_context = {'class_name': model.__name__}
     success_url = reverse_lazy('category_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # add user-facing warning about referencing Transactions
+        category = context['object']
+        transactions = category.transactions
+        if len(transactions) > 0:
+            context['footer'] = f'''To delete Category: {repr(category)},
+            the following Transactions will need to be manually re-categorised {list(transactions)}'''
+            # TODO: disable to ability to submit the form as it will fail
+
+        return context
 
 
 ### Question Views ###
@@ -222,7 +234,7 @@ class TransactionDeleteView(generic.edit.DeleteView):
     http_method_names = ['get', 'post']
     model = Transaction
     template_name = 'generic_delete.html'
-    extra_context = {'class_name': 'transaction', 'footer': 'foobles'}
+    extra_context = {'class_name': model.__name__}
     success_url = reverse_lazy('transaction_list')
 
     def get_context_data(self, **kwargs):
@@ -231,8 +243,9 @@ class TransactionDeleteView(generic.edit.DeleteView):
         # add debug data for deletions
         transaction = context['object']
         qas = transaction.question_answers
-        context['footer'] = f'''In addition to the Transaction: {repr(transaction)},
-        the following QuestionAnswer objects will be first be deleted {list(qas)}'''
+        if len(qas) > 0:
+            context['footer'] = f'''In addition to the Transaction: {repr(transaction)},
+            the following QuestionAnswer objects will be first be deleted {list(qas)}'''
 
         return context
 
