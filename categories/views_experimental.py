@@ -42,7 +42,7 @@ class LatestTransactionView(LoginRequiredMixin, generic.TemplateView):
         try:
             context['transaction'] = Transaction.objects.get(pk=latest['id'])
             context['qs'] = Question.objects.filter(
-                category=context['transaction'].category)
+                categories__in=[context['transaction'].category])
             context['qas'] = QuestionAnswer.objects.filter(
                 transaction=latest['id'])
         except Transaction.DoesNotExist:
@@ -157,7 +157,8 @@ class AnalysisView(LoginRequiredMixin, generic.TemplateView):
 @login_required(login_url='/admin/')
 @require_http_methods(['GET', 'POST'])
 def ingest_view(request):
-    QuestionAnswerFormSet = formset_factory(QuestionAnswerForm, min_num=1)
+    QuestionAnswerFormSet = formset_factory(
+        QuestionAnswerForm, extra=2, min_num=1)
 
     if request.method == 'POST':
         return process_transaction_post(request, QuestionAnswerFormSet)

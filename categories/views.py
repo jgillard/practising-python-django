@@ -221,7 +221,8 @@ def new_transaction(request, pk=None):
     # instructions for adding a formset: https://stackoverflow.com/a/28059352
     # requires for additional/configurable number of QAs
 
-    QuestionAnswerFormSet = formset_factory(QuestionAnswerForm, min_num=1)
+    QuestionAnswerFormSet = formset_factory(
+        QuestionAnswerForm, extra=2, min_num=1)
 
     if request.method == 'POST':
         return process_transaction_post(request, QuestionAnswerFormSet)

@@ -11,17 +11,16 @@
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
 <script>
-  const noOptionHtml = '<option value="">n/a</option>'
+  const noOptionHtml = '<option value="">n/a</option>';
+  const formIdPrefixes = ['id_form-0', 'id_form-1', 'id_form-2'];
 
   $(document).ready(function () {
-    $("#id_form-0-question").html(noOptionHtml);
-    $("#id_form-0-option_answer").parent().hide();
-    $("#id_form-0-number_answer").parent().hide();
-    $("#id_form-0-number_answer").attr('type', 'tel');
-    $("#id_form-1-question").html(noOptionHtml);
-    $("#id_form-1-option_answer").parent().hide();
-    $("#id_form-1-number_answer").parent().hide();
-    $("#id_form-1-number_answer").attr('type', 'tel');
+    formIdPrefixes.forEach((formIdPrefix) => {
+      $(`#${formIdPrefix}-question`).html(noOptionHtml);
+      $(`#${formIdPrefix}-option_answer`).parent().hide();
+      $(`#${formIdPrefix}-number_answer`).parent().hide();
+      $(`#${formIdPrefix}-number_answer`).attr('type', 'tel');
+    });
   });
 
   $("#id_category").change(function () {
@@ -33,21 +32,23 @@
       url: url,
       data: { 'category': categoryId },
       success: function (data) {
-        $("#id_form-0-question").html(data);
-        $("#id_form-1-question").html(data);
+        formIdPrefixes.forEach((formIdPrefix) => {
+          $(`#${formIdPrefix}-question`).html(data);
+        });
       }
     });
 
   });
 
-  $("#id_form-0-question").change(function() {
-    const formId = 0;
-    const questionId = $(this).val();
-    questionSelected(formId, questionId);
+  let questionElements = formIdPrefixes.map(formIdPrefix => {
+    return `#${formIdPrefix}-question`;
   });
+  questionElements = $(questionElements.join(','))
 
-  $("#id_form-1-question").change(function() {
-    const formId = 1;
+  questionElements.change(function(elem) {
+    const regex = /^id_form-(\d{1})-question$/;
+    const matches = elem.currentTarget.id.match(regex);
+    const formId = matches[1];
     const questionId = $(this).val();
     questionSelected(formId, questionId);
   });

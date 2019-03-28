@@ -37,4 +37,4 @@ All setup has not been automated yet. This includes:
 
 Currently deployed on every push to master by Heroku.
 
-Site available here: https://django-categories.herokuapp.com/categories/
+Site available here: https://django-categories.herokuapp.com/
