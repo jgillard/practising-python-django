@@ -20,6 +20,10 @@ class Category(models.Model):
         blank=True,
     )
 
+    hidden = models.BooleanField(
+        default=False
+    )
+
     class Meta:
         verbose_name_plural = "categories"
 

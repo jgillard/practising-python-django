@@ -11,10 +11,11 @@ logger = logging.getLogger(__name__)
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        fields = ('name', 'parent')
+        fields = ('name', 'parent', 'hidden')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['parent'].queryset = Category.objects.filter(hidden=False)
         self.fields['parent'].label_from_instance = lambda obj: obj.get_hierarchical_name()
 
     def clean(self):
@@ -38,6 +39,8 @@ class QuestionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['categories'].queryset = Category.objects.filter(
+            hidden=False)
         self.fields['categories'].label_from_instance = lambda obj: obj.get_hierarchical_name()
 
     def clean(self):
@@ -72,6 +75,8 @@ class TransactionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(
+            hidden=False)
         self.fields['category'].label_from_instance = lambda obj: obj.get_hierarchical_name()
 
 
