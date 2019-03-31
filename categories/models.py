@@ -97,9 +97,6 @@ class Question(models.Model):
     def options(self):
         return self.option_set.all()
 
-    def get_hierarchical_name(self):
-        return f'{self.title}'
-
 
 class Option(models.Model):
     title = models.CharField(

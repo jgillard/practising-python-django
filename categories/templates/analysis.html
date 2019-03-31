@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load mathfilters %}
+
 
 {% block content %}
 
@@ -9,18 +11,39 @@
   This currently does not support Regular/Cash transactions
 </div>
 
-<h4>Pile of stats</h4>
-<p>Total pennies spent in the last 7 days: {{ spending_sum_pennies }}</p>
-<p>Total ingested pennies in the last 7 days: {{ ingested_sum_pennies }}</p>
-<p>The diff: {{ diff }}</p>
-<p>The total uningested pennies in the last 7 days: {{ uningested_sum_pennies }}</p>
-<p>  (those last 2 number should be equal)</p>
-
-<p>count total_transactions: {{ total_transactions_count }}</p>
-<p>count uningested_transactions: {{ count_uningested }}</p>
-<p>count ingested_transactions: {{ count_ingested }}</p>
+<h4>Pile of stats for the last 7 days</h4>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Total</th>
+      <th scope="col">Ingested</th>
+      <th scope="col">Uningested</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Amount Spent</th>
+      <td>£{{ spending_sum_pennies|abs|div:100 }}</td>
+      <td>£{{ ingested_sum_pennies|abs|div:100 }}</td>
+      <td>£{{ uningested_sum_pennies|abs|div:100 }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Transaction Count</th>
+      <td>{{ total_transactions_count }}</td>
+      <td>{{ count_ingested }}</td>
+      <td>{{ count_uningested }}</td>
+    </tr>
+  </tbody>
+</table>
 
 <h4>Totals by top-level Category</h4>
 <p>{{ summary }}</p>
+
+<img src="{{ top_level_category_pi_chart_url }}" style="max-width: 100%;">
+
+<h4>Totals by All Category</h4>
+<p>{{ summary_all_cats }}</p>
+<img src="{{ top_10_category_pi_chart_url }}" style="max-width: 100%;">
 
 {% endblock %}

@@ -170,6 +170,52 @@ class AnalysisView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
             # spend amounts are always negative
             summary[category.name] -= monzo_transaction['amount']
 
+        # charts
+        pi_labels = []
+        pi_data = []
+        for category, value in summary.items():
+            pi_labels.append(category)
+            pi_data.append(value)
+        pi_label_string = str(pi_labels).replace(' ', '').replace('&', '%26')
+        pi_data_string = str(pi_data).replace(' ', '')
+
+        top_level_category_pi_chart_url = (
+            "https://quickchart.io/chart?c={"
+            "type:'pie',"
+            "data:{labels:"
+            f"{pi_label_string}"
+            ",datasets:[{data:"
+            f"{pi_data_string}"
+            "}]}}"
+        )
+
+        summary_all_cats = Counter()
+        for transaction in ingested_transactions:
+            monzo_transaction = [
+                t for t in ingested_transactions_monzo if t['id'] == transaction.id][0]
+            # spend amounts are always negative
+            summary_all_cats[transaction.category.name] -= monzo_transaction['amount']
+
+        # charts
+        pi_labels_top_10 = []
+        pi_data_top_10 = []
+        for category, value in summary_all_cats.most_common(10):
+            pi_labels_top_10.append(category)
+            pi_data_top_10.append(value)
+        pi_labels_top_10_string = str(pi_labels_top_10).replace(
+            ' ', '').replace('&', '%26')
+        pi_data_top_10_string = str(pi_data_top_10).replace(' ', '')
+
+        top_10_category_pi_chart_url = (
+            "https://quickchart.io/chart?c={"
+            "type:'pie',"
+            "data:{labels:"
+            f"{pi_labels_top_10_string}"
+            ",datasets:[{data:"
+            f"{pi_data_top_10_string}"
+            "}]}}"
+        )
+
         context_add = {
             'total_transactions_count': len(spending),
             'spending_sum_pennies': spending_sum_pennies,
@@ -179,7 +225,9 @@ class AnalysisView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
             'uningested_sum_pennies': uningested_sum_pennies,
             'count_uningested': len(uningested_transactions),
             'summary': summary,
-        }
+            'top_level_category_pi_chart_url': top_level_category_pi_chart_url,
+            'summary_all_cats': summary_all_cats,
+            'top_10_category_pi_chart_url': top_10_category_pi_chart_url}
 
         return {**context, **context_add}
 
