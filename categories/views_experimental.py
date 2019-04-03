@@ -15,19 +15,20 @@ from .monzo_integration import MonzoRequest, NoAccessTokenException
 from .views import login_view, process_transaction_post
 
 
-class LatestTransactionView(LoginRequiredMixin, generic.TemplateView):
-    http_method_names = ['get']
-    template_name = 'latest_transaction.html'
-
+class LoginRedirectMixin():
     def dispatch(self, request, *args, **kwargs):
         try:
             MonzoRequest()
         except NoAccessTokenException:
-            self.request.session['final_redirect'] = reverse(
-                'latest_transaction')
+            self.request.session['final_redirect'] = request.path
             return redirect('login_view')
 
         return super().dispatch(request, *args, **kwargs)
+
+
+class LatestTransactionView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView):
+    http_method_names = ['get']
+    template_name = 'latest_transaction.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -51,18 +52,9 @@ class LatestTransactionView(LoginRequiredMixin, generic.TemplateView):
         return context
 
 
-class WeekView(LoginRequiredMixin, generic.TemplateView):
+class WeekView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView):
     http_method_names = ['get']
     template_name = 'week.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            MonzoRequest()
-        except NoAccessTokenException:
-            self.request.session['final_redirect'] = reverse('week')
-            return redirect('login_view')
-
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -92,18 +84,9 @@ class WeekView(LoginRequiredMixin, generic.TemplateView):
         return context
 
 
-class WeekCashView(LoginRequiredMixin, generic.TemplateView):
+class WeekCashView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView):
     http_method_names = ['get']
     template_name = 'week_cash.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            MonzoRequest()
-        except NoAccessTokenException:
-            self.request.session['final_redirect'] = reverse('week')
-            return redirect('login_view')
-
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -146,18 +129,9 @@ class WeekCashView(LoginRequiredMixin, generic.TemplateView):
         return context
 
 
-class AnalysisView(LoginRequiredMixin, generic.TemplateView):
+class AnalysisView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView):
     http_method_names = ['get']
     template_name = 'analysis.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            MonzoRequest()
-        except NoAccessTokenException:
-            self.request.session['final_redirect'] = reverse('analysis_view')
-            return redirect('login_view')
-
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
