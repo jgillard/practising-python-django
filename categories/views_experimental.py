@@ -101,8 +101,6 @@ class WeekCashView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
         spending = [s for s in spending if 'mcc' in s['metadata'].keys()
                     and s['metadata']['mcc'] == '6011']
         ids = [t['id'] for t in spending]
-        print(spending)
-        print(ids)
 
         # get any Transaction objects with a matching ID
         transactions = list(Transaction.objects.filter(pk__in=ids))
@@ -129,6 +127,27 @@ class WeekCashView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
         return context
 
 
+def get_pichart_url(summary):
+    pi_labels = []
+    pi_data = []
+    for category, value in summary.most_common(10):
+        pi_labels.append(category)
+        pi_data.append(value)
+    pi_labels_string = str(pi_labels).replace(
+        ' ', '').replace('&', '%26')
+    pi_data_string = str(pi_data).replace(' ', '')
+
+    return (
+        "https://quickchart.io/chart?c={"
+        "type:'pie',"
+        "data:{labels:"
+        f"{pi_labels_string}"
+        ",datasets:[{data:"
+        f"{pi_data_string}"
+        "}]}}"
+    )
+
+
 class AnalysisView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView):
     http_method_names = ['get']
     template_name = 'analysis.html'
@@ -150,7 +169,6 @@ class AnalysisView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
         diff = spending_sum_pennies - ingested_sum_pennies
 
         uningested_transactions = monzo.get_days_of_uningested_spends(days=7)
-        print(uningested_transactions)
         uningested_sum_pennies = abs(
             sum([t['amount'] for t in uningested_transactions]))
 
@@ -171,23 +189,7 @@ class AnalysisView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
             summary[category.name] -= monzo_transaction['amount']
 
         # charts
-        pi_labels = []
-        pi_data = []
-        for category, value in summary.items():
-            pi_labels.append(category)
-            pi_data.append(value)
-        pi_label_string = str(pi_labels).replace(' ', '').replace('&', '%26')
-        pi_data_string = str(pi_data).replace(' ', '')
-
-        top_level_category_pi_chart_url = (
-            "https://quickchart.io/chart?c={"
-            "type:'pie',"
-            "data:{labels:"
-            f"{pi_label_string}"
-            ",datasets:[{data:"
-            f"{pi_data_string}"
-            "}]}}"
-        )
+        top_level_category_pi_chart_url = get_pichart_url(summary)
 
         summary_all_cats = Counter()
         for transaction in ingested_transactions:
@@ -197,24 +199,7 @@ class AnalysisView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
             summary_all_cats[transaction.category.name] -= monzo_transaction['amount']
 
         # charts
-        pi_labels_top_10 = []
-        pi_data_top_10 = []
-        for category, value in summary_all_cats.most_common(10):
-            pi_labels_top_10.append(category)
-            pi_data_top_10.append(value)
-        pi_labels_top_10_string = str(pi_labels_top_10).replace(
-            ' ', '').replace('&', '%26')
-        pi_data_top_10_string = str(pi_data_top_10).replace(' ', '')
-
-        top_10_category_pi_chart_url = (
-            "https://quickchart.io/chart?c={"
-            "type:'pie',"
-            "data:{labels:"
-            f"{pi_labels_top_10_string}"
-            ",datasets:[{data:"
-            f"{pi_data_top_10_string}"
-            "}]}}"
-        )
+        top_10_category_pi_chart_url = get_pichart_url(summary_all_cats)
 
         context_add = {
             'total_transactions_count': len(spending),
