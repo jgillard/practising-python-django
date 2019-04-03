@@ -125,9 +125,9 @@ class MonzoRequest:
         # DRY
         self.headers = {'Authorization': f'Bearer {access_token}'}
 
-    def get_week_of_spends(self) -> List:
-        one_week_ago = datetime.utcnow() - timedelta(days=7)
-        since = one_week_ago.isoformat(timespec='seconds') + 'Z'
+    def get_days_of_spends(self, days: int = 7) -> List:
+        some_days_ago = datetime.utcnow() - timedelta(days=days)
+        since = some_days_ago.isoformat(timespec='seconds') + 'Z'
         params = {**self.params, 'since': since}
 
         r = requests.get(self.TRANSACTIONS_ENDPOINT,
@@ -146,19 +146,19 @@ class MonzoRequest:
         return transaction
 
     def get_latest_transaction(self) -> Dict:
-        spends = self.get_week_of_spends()
+        spends = self.get_days_of_spends(days=7)
         latest_txid = spends[-1]['id']
         transaction = self.get_transaction(latest_txid)
         return transaction
 
     def get_latest_uningested_transaction(self) -> Dict:
-        uningested = self.get_week_of_uningested_spends()
+        uningested = self.get_days_of_uningested_spends(days=28)
         latest_txid = uningested[-1]['id']
         transaction = self.get_transaction(latest_txid)
         return transaction
 
-    def get_week_of_ingested_spends(self) -> List:
-        spends = self.get_week_of_spends()
+    def get_days_of_ingested_spends(self, days: int = 7) -> List:
+        spends = self.get_days_of_spends(days=days)
         week_spend_ids = set([t['id'] for t in spends])
         # This model will need the Monzo created date saved to prevent slow queries
         all_ingested_ids = set(
@@ -169,8 +169,8 @@ class MonzoRequest:
             t for t in spends if t['id'] in week_ingested_ids]
         return week_ingested_monzo_transactions
 
-    def get_week_of_uningested_spends(self) -> List:
-        spends = self.get_week_of_spends()
+    def get_days_of_uningested_spends(self, days: int = 7) -> List:
+        spends = self.get_days_of_spends(days)
         week_spend_ids = set([t['id'] for t in spends])
         # This model will need the Monzo created date saved to prevent slow queries
         all_ingested_ids = set(

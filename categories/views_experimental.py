@@ -61,7 +61,7 @@ class WeekView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView):
 
         t0 = time.time()
         monzo = MonzoRequest()
-        spending = monzo.get_week_of_spends()
+        spending = monzo.get_days_of_spends(days=7)
         req_1_secs = time.time() - t0
 
         ids = [t['id'] for t in spending]
@@ -93,7 +93,7 @@ class WeekCashView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
 
         t0 = time.time()
         monzo = MonzoRequest()
-        spending = monzo.get_week_of_spends()
+        spending = monzo.get_days_of_spends(days=7)
         req_1_secs = time.time() - t0
 
         # only diff is here
@@ -137,23 +137,25 @@ class AnalysisView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
         context = super().get_context_data(**kwargs)
 
         monzo = MonzoRequest()
-        spending = monzo.get_week_of_spends()
+        spending = monzo.get_days_of_spends(days=7)
 
         # sums
         spending_sum_pennies = abs(sum([t['amount'] for t in spending]))
 
-        ingested_spends = monzo.get_week_of_ingested_spends()
+        ingested_transactions_monzo = monzo.get_days_of_ingested_spends(days=7)
 
-        ingested_sum_pennies = abs(sum([t['amount'] for t in ingested_spends]))
+        ingested_sum_pennies = abs(
+            sum([t['amount'] for t in ingested_transactions_monzo]))
 
         diff = spending_sum_pennies - ingested_sum_pennies
 
-        uningested_transactions = monzo.get_week_of_uningested_spends()
+        uningested_transactions = monzo.get_days_of_uningested_spends(days=7)
+        print(uningested_transactions)
         uningested_sum_pennies = abs(
             sum([t['amount'] for t in uningested_transactions]))
 
         # some category stuff
-        ingested_transactions_monzo = monzo.get_week_of_ingested_spends()
+        ingested_transactions_monzo = monzo.get_days_of_ingested_spends(days=7)
         ingested_transaction_ids = [t['id']
                                     for t in ingested_transactions_monzo]
         ingested_transactions = list(
@@ -172,7 +174,7 @@ class AnalysisView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
             'total_transactions_count': len(spending),
             'spending_sum_pennies': spending_sum_pennies,
             'ingested_sum_pennies': ingested_sum_pennies,
-            'count_ingested': len(ingested_spends),
+            'count_ingested': len(ingested_transactions_monzo),
             'diff': diff,
             'uningested_sum_pennies': uningested_sum_pennies,
             'count_uningested': len(uningested_transactions),
