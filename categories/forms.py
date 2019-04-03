@@ -80,6 +80,17 @@ class TransactionForm(forms.ModelForm):
         self.fields['category'].label_from_instance = lambda obj: obj.get_hierarchical_name()
 
 
+class CashTransactionForm(TransactionForm):
+    class Meta(TransactionForm.Meta):
+        model = CashTransaction
+        fields = ('id', 'category', 'amount', 'description',
+                  'merchant_name', 'spend_date')
+
+    def __init__(self, *args, **kwargs):
+        super(CashTransactionForm, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs['readonly'] = True
+
+
 class QuestionAnswerForm(forms.ModelForm):
     class Meta:
         model = QuestionAnswer

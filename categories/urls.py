@@ -61,10 +61,15 @@ urlpatterns = [
     path('transactions/<str:pk>/delete/',
          views.TransactionDeleteView.as_view(), name='transaction_delete'),
 
+    path('cashtransactions/new/',
+         views.new_cash_transaction, name='cash_transaction_new'),
+
     path('lt/',
          views_experimental.LatestTransactionView.as_view(), name='latest_transaction'),
     path('week/',
          views_experimental.WeekView.as_view(), name='week'),
+    path('week-cash/',
+         views_experimental.WeekCashView.as_view(), name='week_cash'),
     path('analysis/',
          views_experimental.AnalysisView.as_view(), name='analysis_view'),
     path('ingest/',

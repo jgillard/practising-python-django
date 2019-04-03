@@ -92,6 +92,60 @@ class WeekView(LoginRequiredMixin, generic.TemplateView):
         return context
 
 
+class WeekCashView(LoginRequiredMixin, generic.TemplateView):
+    http_method_names = ['get']
+    template_name = 'week_cash.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            MonzoRequest()
+        except NoAccessTokenException:
+            self.request.session['final_redirect'] = reverse('week')
+            return redirect('login_view')
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        t0 = time.time()
+        monzo = MonzoRequest()
+        spending = monzo.get_week_of_spends()
+        req_1_secs = time.time() - t0
+
+        # only diff is here
+        # filter on mastercard mcc 6011 for "automated cash disbursements"
+        spending = [s for s in spending if 'mcc' in s['metadata'].keys()
+                    and s['metadata']['mcc'] == '6011']
+        ids = [t['id'] for t in spending]
+        print(spending)
+        print(ids)
+
+        # get any Transaction objects with a matching ID
+        transactions = list(Transaction.objects.filter(pk__in=ids))
+
+        # Attach Transaction object to monzo spends if it exists
+        for spend in spending:
+            spend['transaction'] = None
+            for transaction in transactions:
+                if transaction.id == spend['id']:
+                    spend['transaction'] = transaction
+
+        # Put the latest transactions at the front of the list
+        spending = spending[::-1]
+
+        today = datetime.date.today()
+        one_week_ago = today - datetime.timedelta(days=7)
+        cash_transactions = CashTransaction.objects.filter(
+            spend_date__gte=one_week_ago)
+
+        context['object_list'] = spending
+        context['cash_transactions'] = cash_transactions
+        context['req_1_secs'] = req_1_secs
+
+        return context
+
+
 class AnalysisView(LoginRequiredMixin, generic.TemplateView):
     http_method_names = ['get']
     template_name = 'analysis.html'

@@ -95,6 +95,14 @@ class TestTransaction(TestCase):
             category=self.sub_category
         )
 
+        self.cash_transaction = models.CashTransaction.objects.create(
+            id='1234',
+            category=self.parent_category,
+            amount=-1,
+            description='foobar',
+            merchant_name='foobar'
+        )
+
         self.question = models.Question.objects.create(
             title='attached to parent category',
             answer_type='S'
@@ -129,4 +137,14 @@ class TestTransaction(TestCase):
     def test_transaction_get_question_answers(self):
         got = self.transaction.question_answers[0]
         want = self.qa
+        self.assertEquals(got, want)
+
+    def test_transaction_is_cash_transaction_true(self):
+        got = self.cash_transaction.is_cash_transaction
+        want = True
+        self.assertEquals(got, want)
+
+    def test_transaction_is_cash_transaction_false(self):
+        got = self.transaction.is_cash_transaction
+        want = False
         self.assertEquals(got, want)

@@ -28,6 +28,10 @@ class TransactionAdmin(admin.ModelAdmin):
     list_display = ('id', 'category')
 
 
+class CashTransactionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'category', 'amount', 'created')
+
+
 class QuestionAnswerAdmin(admin.ModelAdmin):
     list_display = ('transaction', 'question',
                     'option_answer', 'number_answer')
@@ -44,6 +48,8 @@ admin.site.register(Question, QuestionAdmin)
 admin.site.register(Option, OptionAdmin)
 
 admin.site.register(Transaction, TransactionAdmin)
+
+admin.site.register(CashTransaction, CashTransactionAdmin)
 
 admin.site.register(QuestionAnswer, QuestionAnswerAdmin)
 

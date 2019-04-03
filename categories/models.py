@@ -1,3 +1,6 @@
+import datetime
+
+from django.core.validators import MaxValueValidator
 from django.db import models
 
 
@@ -123,7 +126,7 @@ class Option(models.Model):
 class Transaction(models.Model):
     id = models.CharField(
         primary_key=True,
-        max_length=30,
+        max_length=32,
     )
 
     category = models.ForeignKey(
@@ -153,6 +156,36 @@ class Transaction(models.Model):
     @property
     def question_answers(self):
         return self.questionanswer_set.all()
+
+    @property
+    def is_cash_transaction(self):
+        return hasattr(self, 'cashtransaction')
+
+
+class CashTransaction(Transaction):
+    # One penny is "largest" possible amount value
+    amount = models.IntegerField(
+        validators=[MaxValueValidator(-1)]
+    )
+
+    description = models.CharField(
+        max_length=30
+    )
+
+    merchant_name = models.CharField(
+        max_length=30
+    )
+
+    spend_date = models.DateField(
+        default=datetime.datetime.now
+    )
+
+    created = models.DateField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        verbose_name_plural = "CashTransactions"
 
 
 class QuestionAnswer(models.Model):

@@ -14,6 +14,20 @@
       <th scope="row">Assigned Category</th>
       <td>{{ object.category }}</td>
     </tr>
+    {% if object.is_cash_transaction %}
+    <tr>
+      <th scope="row">Cash Amount</th>
+      <td>{{ object.cashtransaction.amount }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Cash Description</th>
+      <td>{{ object.cashtransaction.description }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Cash Merchant Name</th>
+      <td>{{ object.cashtransaction.merchant_name }}</td>
+    </tr>
+    {% endif %}
     {% for q in object.applicable_questions %}
       <tr>
         <th scope="row">Category Question</th>

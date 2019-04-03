@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 from django.http import HttpResponse
@@ -218,16 +220,13 @@ class TransactionDetailView(generic.DetailView):
 
 @require_http_methods(['GET', 'POST'])
 def new_transaction(request, pk=None):
-    # instructions for adding a formset: https://stackoverflow.com/a/28059352
-    # requires for additional/configurable number of QAs
-
     QuestionAnswerFormSet = formset_factory(
         QuestionAnswerForm, extra=2, min_num=1)
 
     if request.method == 'POST':
         return process_transaction_post(request, QuestionAnswerFormSet)
     else:
-        prefill_data = {'id': pk}
+        prefill_data = {'id': pk or uuid4().hex}
         form_transaction = TransactionForm(initial=prefill_data)
         formset_questionanswer = QuestionAnswerFormSet()
 
@@ -254,6 +253,25 @@ class TransactionDeleteView(generic.edit.DeleteView):
             the following QuestionAnswer objects will be first be deleted {list(qas)}'''
 
         return context
+
+
+### Transaction Views ###
+
+@require_http_methods(['GET', 'POST'])
+def new_cash_transaction(request):
+    QuestionAnswerFormSet = formset_factory(
+        QuestionAnswerForm, extra=2, min_num=1)
+
+    if request.method == 'POST':
+        return process_transaction_post(request, QuestionAnswerFormSet, TransactionForm=CashTransactionForm)
+    else:
+        prefill_data = {'id': uuid4().hex}
+        form_cash_transaction = CashTransactionForm(initial=prefill_data)
+        formset_questionanswer = QuestionAnswerFormSet()
+
+        context = {'form_transaction': form_cash_transaction,
+                   'formset_questionanswer': formset_questionanswer}
+        return render(request, 'transaction_new.html', context=context)
 
 
 ### Composite Views ###
@@ -329,7 +347,7 @@ class LoadOptionsForQuestionView(generic.TemplateView):
 ### Shared Logic ###
 
 @require_http_methods(['GET', 'POST'])
-def process_transaction_post(request, QuestionAnswerFormSet):
+def process_transaction_post(request, QuestionAnswerFormSet, TransactionForm=TransactionForm):
     form_transaction = TransactionForm(request.POST)
     formset_questionanswer = QuestionAnswerFormSet(request.POST)
     if all([form_transaction.is_valid(), formset_questionanswer.is_valid()]):
