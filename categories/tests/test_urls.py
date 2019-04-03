@@ -134,6 +134,11 @@ class TestUrls(SimpleTestCase):
         url = reverse('oauth_callback')
         self.assertEquals(resolve(url).func, views.oauth_callback_view)
 
+    def test_resolves_monzo_webhook(self):
+        url = reverse('webhook_monzo')
+        self.assertEquals(resolve(url).func,
+                          views_experimental.webhook_monzo_view)
+
     def test_resolves_ajax_load_questions_for_category(self):
         url = reverse('ajax_load_questions_for_category')
         self.assertEquals(resolve(url).func.view_class,

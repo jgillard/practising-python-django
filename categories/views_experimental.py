@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import formset_factory
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import generic
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from collections import Counter
@@ -220,3 +222,20 @@ def category_tree_view(request):
 
     context = {'object_list': top_level_categories}
     return render(request, 'category_list_tree.html', context)
+
+
+### Webhook Views ###
+
+# This is unauthenticated :-1:
+# There's no way of determining that the push came from Monzo currently
+# Source: https://github.com/monzo/docs/issues/50
+@csrf_exempt
+def webhook_monzo_view(request):
+    data = json.loads(request.body)
+    if data['type'] != 'transaction.created':
+        raise Exception('Unexpected webhook data type')
+
+    if data['data']['is_load'] is not True:
+        MonzoRequest().create_feed_item(request)
+
+    return HttpResponse(status=204)

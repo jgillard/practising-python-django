@@ -83,7 +83,7 @@ urlpatterns = [
          views.oauth_callback_view, name='oauth_callback'),
 
     path('webhooks/monzo/',
-         views.webhook_monzo_view, name='webhook_monzo'),
+         views_experimental.webhook_monzo_view, name='webhook_monzo'),
 
     path('ajax/load-questions-for-category/',
          views.LoadQuestionsForCategoryView.as_view(), name='ajax_load_questions_for_category'),
