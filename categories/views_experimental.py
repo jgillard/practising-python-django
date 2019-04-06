@@ -52,16 +52,21 @@ class LatestTransactionView(LoginRequiredMixin, LoginRedirectMixin, generic.Temp
         return context
 
 
-class WeekView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView):
+class MonzoTransactionsView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView):
     http_method_names = ['get']
-    template_name = 'week.html'
+    template_name = 'monzo_transactions.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        try:
+            num_days_in_view = context['days']
+        except KeyError:
+            num_days_in_view = 7
+
         t0 = time.time()
         monzo = MonzoRequest()
-        spending = monzo.get_days_of_spends(days=7)
+        spending = monzo.get_days_of_spends(days=num_days_in_view)
         req_1_secs = time.time() - t0
 
         ids = [t['id'] for t in spending]
@@ -78,22 +83,28 @@ class WeekView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView):
         # Put the latest transactions at the front of the list
         spending = spending[::-1]
 
+        context['num_days_in_view'] = num_days_in_view
         context['object_list'] = spending
         context['req_1_secs'] = req_1_secs
 
         return context
 
 
-class WeekCashView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView):
+class CashTransactionsView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView):
     http_method_names = ['get']
-    template_name = 'week_cash.html'
+    template_name = 'cash_transactions.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        try:
+            num_days_in_view = context['days']
+        except KeyError:
+            num_days_in_view = 7
+
         t0 = time.time()
         monzo = MonzoRequest()
-        spending = monzo.get_days_of_spends(days=7)
+        spending = monzo.get_days_of_spends(days=num_days_in_view)
         req_1_secs = time.time() - t0
 
         # only diff is here
@@ -116,10 +127,11 @@ class WeekCashView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
         spending = spending[::-1]
 
         today = datetime.date.today()
-        one_week_ago = today - datetime.timedelta(days=7)
+        one_week_ago = today - datetime.timedelta(days=num_days_in_view)
         cash_transactions = CashTransaction.objects.filter(
             spend_date__gte=one_week_ago)
 
+        context['num_days_in_view'] = num_days_in_view
         context['object_list'] = spending
         context['cash_transactions'] = cash_transactions
         context['req_1_secs'] = req_1_secs
@@ -155,7 +167,10 @@ class AnalysisView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        num_days_in_view = 30
+        try:
+            num_days_in_view = context['days']
+        except KeyError:
+            num_days_in_view = 30
 
         monzo = MonzoRequest()
         spending = monzo.get_days_of_spends(days=num_days_in_view)
@@ -207,6 +222,7 @@ class AnalysisView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
         top_10_category_pi_chart_url = get_pichart_url(summary_all_cats)
 
         context_add = {
+            'num_days_in_view': num_days_in_view,
             'total_transactions_count': len(spending),
             'spending_sum_pennies': spending_sum_pennies,
             'ingested_sum_pennies': ingested_sum_pennies,

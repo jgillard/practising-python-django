@@ -112,13 +112,18 @@ class TestUrls(SimpleTestCase):
         self.assertEquals(resolve(url).func.view_class,
                           views_experimental.LatestTransactionView)
 
-    def test_resolves_week(self):
-        url = reverse('week')
+    def test_resolves_monzo_transactions(self):
+        url = reverse('monzo_transactions', args=[1])
         self.assertEquals(resolve(url).func.view_class,
-                          views_experimental.WeekView)
+                          views_experimental.MonzoTransactionsView)
+
+    def test_resolves_cash_transactions(self):
+        url = reverse('cash_transactions', args=[1])
+        self.assertEquals(resolve(url).func.view_class,
+                          views_experimental.CashTransactionsView)
 
     def test_resolves_analysis_view(self):
-        url = reverse('analysis_view')
+        url = reverse('analysis_view', args=[1])
         self.assertEquals(resolve(url).func.view_class,
                           views_experimental.AnalysisView)
 

@@ -5,12 +5,11 @@
 
 {% block content %}
 
-<h2>Week of Cash</h2>
+<h2>{{ num_days_in_view }} days of Monzo Transactions</h2>
 
 <h4>Metadata</h4>
 <p>List transactions time: {{ req_1_secs|floatformat:3 }}s</p>
 
-<h4>Withdrawals</h4>
 <table class="table">
   <thead>
     <tr>
@@ -35,35 +34,9 @@
         <td>{{ obj.local_amount|abs|div:100 }} {{ obj.local_currency }}</td>
         <td>
           {% if not obj.transaction %}
-            <a class="btn btn-dark" href="{% url 'cash_transaction_new' %}">New Transaction</a>
+            <a class="btn btn-dark" href="{% url 'transaction_new' obj.id %}">New Transaction</a>
           {% endif %}
         </td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-<h4>Cash Transactions</h4>
-<a class="btn btn-dark" href="{% url 'cash_transaction_new' %}">New Cash Transaction</a>
-<br><br>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Desc</th>
-      <th scope="col">Merchant</th>
-      <th scope="col">Category</th>
-      <th scope="col">Date</th>
-      <th scope="col">Amount</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for obj in cash_transactions %}
-      <tr>
-        <td>{{ obj.description }}</td>
-        <td>{{ obj.merchant_name }}</td>
-        <td>{{ obj.category }}</td>
-        <td>{{ obj.spend_date }}</td>
-        <td>{{ obj.amount|abs|div:100 }} GBP</td>
       </tr>
     {% endfor %}
   </tbody>
