@@ -152,7 +152,8 @@ class MonzoRequest:
         return transaction
 
     def get_latest_uningested_transaction(self) -> Dict:
-        uningested = self.get_days_of_uningested_spends(days=28)
+        # this should paginate, would fix #6
+        uningested = self.get_days_of_uningested_spends(days=30)
         latest_txid = uningested[-1]['id']
         transaction = self.get_transaction(latest_txid)
         return transaction
