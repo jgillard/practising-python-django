@@ -155,25 +155,30 @@ class AnalysisView(LoginRequiredMixin, LoginRedirectMixin, generic.TemplateView)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        num_days_in_view = 30
+
         monzo = MonzoRequest()
-        spending = monzo.get_days_of_spends(days=7)
+        spending = monzo.get_days_of_spends(days=num_days_in_view)
 
         # sums
         spending_sum_pennies = abs(sum([t['amount'] for t in spending]))
 
-        ingested_transactions_monzo = monzo.get_days_of_ingested_spends(days=7)
+        ingested_transactions_monzo = monzo.get_days_of_ingested_spends(
+            days=num_days_in_view)
 
         ingested_sum_pennies = abs(
             sum([t['amount'] for t in ingested_transactions_monzo]))
 
         diff = spending_sum_pennies - ingested_sum_pennies
 
-        uningested_transactions = monzo.get_days_of_uningested_spends(days=7)
+        uningested_transactions = monzo.get_days_of_uningested_spends(
+            days=num_days_in_view)
         uningested_sum_pennies = abs(
             sum([t['amount'] for t in uningested_transactions]))
 
         # some category stuff
-        ingested_transactions_monzo = monzo.get_days_of_ingested_spends(days=7)
+        ingested_transactions_monzo = monzo.get_days_of_ingested_spends(
+            days=num_days_in_view)
         ingested_transaction_ids = [t['id']
                                     for t in ingested_transactions_monzo]
         ingested_transactions = list(
