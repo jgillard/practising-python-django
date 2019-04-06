@@ -8,7 +8,7 @@ I intend to cover Django with a Postgres backend, Django Rest Framework, and may
 
 ## Installation
 
-This has been developed with Python 3.7.2, and is currently using Django 2.1.5.
+This has been developed with Python 3.7.3, and is currently using Django 2.2.0.
 
 ```
 python3 -m venv .venv
